@@ -1,0 +1,1156 @@
+
+
+
+
+
+
+
+
+
+
+QuadrAki – Aluguel de Quadras Esportivas
+
+
+Devsolve Engineering
+
+
+
+
+
+
+
+
+
+
+
+
+
+Cliente: Laudelino Cordeiro Bastos.
+Responsáveis no cliente: Giovanni Mioto
+
+
+
+
+
+Projeto: QuadrAki – Aluguel de Quadras Esportivas
+Versão: 0.1
+
+
+
+
+
+
+Curitiba
+2026
+
+
+
+
+
+
+
+QuadrAki – Aluguel de Quadras Esportivas
+
+
+
+
+
+
+Responsáveis no cliente: Giovanni Mioto
+
+
+
+Responsáveis pelo projeto e desenvolvimento: Giovanni Mioto
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Curitiba
+2026
+
+
+
+
+
+
+Histórico de Modificações
+
+
+
+Data
+Versão
+Descrição
+Autor
+22/03/2026
+0.1
+Criação do documento e início dos
+trabalhos com diagramação
+Giovanni Mioto
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SUMÁRIO
+1 INTRODUÇÃO	7
+1.1 Objetivo Geral	7
+1.2 Objetivos Específicos	7
+1.3 Conteúdo do Plano do Projeto	8
+2 LEVANTAMENTO DE REQUISITOS	9
+2.1 Questões Organizacionais	9
+2.2 Questões Econômicas	11
+2.3 Questões Técnicas	12
+2.4 Questões Operacionais	14
+2.5 Requisitos Funcionais, Não Funcionais, Restrições de Projeto e Requisitos de Experiência do Usuário	15
+2.5.1 Requisitos Funcionais	15
+2.5.2 Requisitos não funcionais	16
+2.5.3 Restrições de Projeto	17
+2.5.4 Requisitos de Experiência do Usuário	17
+2.6 Estimativa de Esforço de Software com Planning Poker	18
+3 ESTUDO DE VIABILIDADE	20
+3.1 Viabilidade Organizacional	20
+3.2 Viabilidade Econômica	21
+3.3 Viabilidade Técnica	21
+3.4 Viabilidade Operacional	22
+3.5 Recursos a serem utilizados	22
+3.5.1 Recursos de Hardware:	23
+3.5.2 Recursos de Software:	23
+4 RESULTADOS	24
+4.1 CONTEÚDO DOS RESULTADOS	24
+4.2 MODELAGEM	24
+4.2.1 Diagrama de Casos de Uso	25
+4.3.1 Diagrama de Classes	43
+4.3.2 Dicionário de Informações	43
+4.4 Diagrama de Objetos (Instâncias)	49
+4.5 Diagramas de Sequência	51
+5 CONCLUSÕES	58
+6 REFERÊNCIAS BIBLIOGRÁFICAS	59
+APÊNDICE A – Título do Apêndice	60
+ANEXO A – Título do Anexo	60
+
+
+LISTA DE FIGURAS
+
+Figura 1. Diagrama de Casos de Uso.
+Figura 2. Diagrama de Classes.
+Figura 3. Diagrama de Objetos.
+Figura 4. Diagrama de Sequência para o Caso de Uso UC001 – Escolher o tipo de usuário.
+Figura 5. Diagrama de Sequência para o Caso de Uso UC002 – Realizar login.
+Figura 6. Diagrama de Sequência para o Caso de Uso UC003 – Apresentar menu de praticante.
+Figura 7. Diagrama de Sequência para o Caso de Uso UC004 – Buscar e consultar disponibilidade de quadras.
+Figura 8. Diagrama de Sequência para o Caso de Uso UC005 – Apresentar menu de proprietário.
+Figura 9. Diagrama de Sequência para o Caso de Uso UC006 – Gerenciar catálogo de quadras.
+Figura 10. Diagrama de Sequência para o Caso de Uso UC007 – Apresentar histórico de locações.
+Figura 11. Diagrama de Sequência para o Caso de Uso UC008 – Realizar reserva de quadra.
+Figura 12. Diagrama de Sequência para o Caso de Uso UC009 – Adicionar aluguel de equipamentos à reserva.
+Figura 13. Diagrama de Sequência para o Caso de Uso UC010 – Processar pagamento.
+Figura 14. Diagrama de Sequência para o Caso de Uso UC011 – Avaliar quadras e equipamentos.
+Figura 15. Diagrama de Sequência para o Caso de Uso UC012 – Gerenciar reservas ativas.
+LISTA DE TABELAS E QUADROS
+
+Tabela 1. Requisitos Funcionais.
+Tabela 2. Requisitos Não Funcionais.
+Tabela 3. Requisitos de Projeto.
+Tabela 4. Requisitos de Experiência do Usuário.
+Tabela 5. Estimativa de horas de trabalho.
+Tabela 6. Casos de uso do sistema.
+Tabela 7. Especificação do Caso de Uso UC001.
+Tabela 8. Especificação do Caso de Uso UC002.
+Tabela 9. Especificação do Caso de Uso UC003.
+Tabela 10. Especificação do Caso de Uso UC004.
+Tabela 11. Especificação do Caso de Uso UC005.
+Tabela 12. Especificação do Caso de Uso UC006.
+Tabela 13. Especificação do Caso de Uso UC007.
+Tabela 14. Especificação do Caso de Uso UC008.
+Tabela 15. Especificação do Caso de Uso UC009.
+Tabela 16. Especificação do Caso de Uso UC010.
+Tabela 17. Especificação do Caso de Uso UC011.
+Tabela 18. Especificação do Caso de Uso UC012.
+Tabela 19. Dicionário de Informações: Usuário.
+Tabela 20. Dicionário de Informações: Quadras.
+Tabela 21. Dicionário de Informações: Agendamentos.
+Tabela 22. Dicionário de Informações: Avaliações.
+Tabela 23. Dicionário de Informações: Equipamentos.
+Tabela 24. Dicionário de Informações: Aluguel_Equipamentos.
+LISTA DE ABREVIATURAS E SIGLAS
+
+API: Application Programming Interface (Interface de Programação de Aplicações)
+AWS: Amazon Web Services
+CNPJ: Cadastro Nacional da Pessoa Jurídica
+CPF: Cadastro de Pessoas Físicas
+GCP: Google Cloud Platform
+LGPD: Lei Geral de Proteção de Dados
+ORM: Object-Relational Mapping (Mapeamento Objeto-Relacional)
+RF: Requisito Funcional
+RNF: Requisito Não Funcional
+RP: Requisito de Projeto
+RUX (ou UX): Requisito de Experiência do Utilizador (User Experience)
+SSL: Secure Sockets Layer
+UC: Use Case (Caso de Uso)
+
+
+
+
+
+
+1 INTRODUÇÃO
+
+O presente projeto tem como objetivo principal o planejamento e a especificação do sistema para o aplicativo QUADRAKI, uma plataforma destinada a facilitar o agendamento de quadras esportivas e aluguel de equipamentos correlatos. Em um cenário onde a digitalização de serviços se torna cada vez mais essencial, o QUADRAKI visa otimizar a experiência tanto dos usuários (que buscam locais para a prática de esportes) quanto dos proprietários de quadras (que necessitam gerir seus espaços e reservas de forma eficiente). 
+
+1.1 Objetivo Geral
+Desenvolver um sistema de gestão digital que intermedeia o agendamento e aluguel de quadras esportivas e equipamentos, promovendo organização, transparência, conveniência e agilidade para o público desportista e para os proprietários de estabelecimentos esportivos.
+
+1.2 Objetivos Específicos
+Os objetivos específicos do projeto são: permitir o cadastro e login dos usuários, separando clientes (proprietários de estabelecimentos esportivos), e usuários (praticantes de esportes); permitir aos clientes registrar, remover, editar o catálogo interativo de espaços desportivos, incluindo informações detalhadas como tipo de desporto, morada, preço por hora e horários disponíveis. Permitir aos usuários agendar horários de locação das quadras esportivas de forma intuitiva, dinâmica e em tempo real, isto é, trazer somente os horários que de fato estão disponíveis em um determinado espaço esportivo.
+Oferecer a opção de adicionar o aluguel de equipamentos desportivos complementares (como bolas, redes ou coletes) em conjunto com a reserva do espaço, e incluir de forma centralizada o pagamento associado às reservas, com métodos de pagamento facilitadores, como PIX, cartão de Crédito e débito.
+Fornecer um sistema de avaliação que permita que os utilizadores atribuam notas e comentários sobre a qualidade das quadras e equipamentos utilizados de forma a facilitar a escolha de outros usuários.
+
+1.3 Conteúdo do Plano do Projeto
+Este documento está estruturado em cinco secções principais que detalham o planeamento e a especificação do sistema QuadrAki:
+Capítulo 2: Levantamento de Requisitos: Aborda as necessidades organizacionais, econômicas, técnicas e operacionais, detalhando também os requisitos funcionais, não funcionais, restrições de projeto e os requisitos de experiência do utilizador.
+Capítulo 3: Estudo de Viabilidade: Analisa a viabilidade organizacional, económica, técnica e operacional do projeto, bem como os recursos de hardware e software necessários para o seu desenvolvimento.
+Capítulo 4: Resultados: Apresenta a modelagem do sistema através da Análise Orientada a Objetos, incluindo os diagramas de casos de uso, diagrama de classes, dicionário de informações e os respectivos diagramas de sequência.
+Capítulo 5: Conclusões: Sintetiza os resultados alcançados, as facilidades e dificuldades encontradas durante o planejamento do sistema e a escolha das tecnologias, relacionando-os com os objetivos inicialmente propostos.
+Capítulo 6: Referências Bibliográficas: Lista todas as fontes de pesquisa, documentação técnica, manuais e normativas utilizadas para a elaboração e fundamentação deste plano de projeto.
+
+
+2 LEVANTAMENTO DE REQUISITOS
+
+Este levantamento foi estruturado para compreender as necessidades dos proprietários de estabelecimentos (clientes) e dos praticantes de esportes (usuários).
+2.1 Questões Organizacionais
+Quais as principais funcionalidades que o sistema oferecerá aos usuários? 
+O sistema oferecerá gestão de catálogos de quadras, agendamento em tempo real e intermediação de pagamentos.
+
+Quais os critérios para avaliar o sucesso do projeto após sua implantação?
+Será medido pela taxa de ocupação das quadras cadastradas, feedbacks dos proprietários e avaliação dos usuários.
+
+Como será feita a distinção entre proprietários e usuários no cadastro?
+O sistema terá fluxos de cadastros distintos para proprietários e para usuários, contando com a validação de documentos específicos para proprietários, como CNPJ e comprovante de estabelecimento.
+
+Quais os principais desafios esperados no desenvolvimento? 
+A sincronização de horários em tempo real para evitar reservas duplicadas e a integração segura com gateways de pagamento.
+
+Qual o processo para a inclusão de novas quadras no catálogo?
+O proprietário acessará um painel de gestão no aplicativo que possibilitará o cadastro de novas quadras, com a inclusão de fotos e detalhes da quadra como tipos de esporte, endereço e valores.
+
+Como a organização lidará com o cancelamento de reservas?
+O cancelamento deve respeitar uma política que o proprietário deve parametrizar, respeitando as normas de defesa do direito do consumidor.
+
+Quem será responsável pela curadoria das avaliações recebidas?
+O sistema terá um controle para censura contra palavras impróprias, e o proprietário poderá responder aos comentários dos usuários.
+
+De que forma o sistema apoiará a gestão de equipamentos?
+O proprietário poderá vincular um estoque de equipamentos a uma determinada quadra, como bolas, coletes, raquetes, redes, tacos, cones, etc.
+
+Qual o fluxo de comunicação interna para novos agendamentos?
+O sistema dispara uma notificação para o proprietário e para o usuário, imediatamente após o agendamento realizado por parte do usuário. Após isso, o usuário terá 10 minutos para realizar o pagamento do aluguel da quadra. Desde o momento do agendamento, a quadra fica indisponível para aluguel no horário escolhido pelo usuário. Se o usuário conclui o pagamento, então o horário fica definitivamente indisponível naquela quadra. Se o pagamento não for concluído, o horário volta a ficar disponível para o público geral.
+
+Quais os impactos esperados na rotina dos estabelecimentos esportivos?
+Redução do atendimento manual via telefone, whatsapp, instagram, maior controle financeiro do proprietário, controle automático de agenda.
+
+Quais as estratégias para garantir a adoção do sistema pelos proprietários? 
+Demonstração de redução de custos operacionais e fornecimento de um painel administrativo intuitivo para gestão do negócio.
+
+Como será garantida a adoção do sistema pelos usuários? 
+Através de uma interface intuitiva, dinâmica e métodos de pagamento facilitadores como o PIX.
+
+2.2 Questões Econômicas
+Como o sistema pode gerar valor adicional para a instituição? 
+Ao digitalizar o serviço, ele atrai um público maior que busca conveniência e agilidade.
+
+Qual a fonte de recursos para o projeto? 
+O projeto é desenvolvido para o cliente Laudelino Cordeiro Bastos pela Devsolve Engineering, empresa a qual proverá os recursos previstos.
+
+Qual o orçamento do projeto? 
+O projeto terá um custo de desenvolvimento de R$10.000,00.
+
+Quais os principais custos envolvidos no desenvolvimento do sistema?
+Os custos incluem despesas relacionadas a infraestrutura de desenvolvimento de software, licenciamento de ferramentas e software, e
+eventuais custos com treinamento e suporte técnico, salários da equipe de desenvolvimento.
+
+Quais os principais benefícios econômicos para os proprietários?
+Centralização de pagamentos e redução de ociosidade das quadras.
+
+Haverá custos de manutenção após a implantação? 
+Sim, referentes à hospedagem do banco de dados e atualizações de segurança.
+
+Como o sistema lidará com o aluguel de equipamentos extras? 
+O valor será integrado ao agendamento, permitindo cobrança centralizada.
+
+Como será mensurada a relação custo-benefício? 
+Pela economia de tempo na gestão manual e aumento do volume de locações efetuadas. Será avaliada pela redução de despesas administrativas e pela satisfação dos usuários, medidos por indicadores de desempenho antes e depois da implantação do sistema. Para a parte do desenvolvimento, pelo tempo de retorno do investimento (payback) baseado no volume de transações mensais.
+
+
+Quais os métodos de pagamento previstos para garantir receita? 
+Serão integrados PIX, cartões de crédito e débito.
+
+2.3 Questões Técnicas
+Quais são os requisitos de hardware e infraestrutura para o sistema?
+A infraestrutura do QuadrAki é baseada em nuvem (AWS/Azure/GCP) para hospedar o backend e o banco de dados. Servidores virtuais com CPU e RAM de alta performance suportam cargas intensivas de agendamentos. A segurança é garantida por firewalls e criptografia SSL para proteção dos dados em trânsito. O acesso mobile (iOS/Android) requer smartphones com conexão estável à internet.
+
+Qual banco de dados será utilizado? 
+O sistema utilizará o PostgreSQL, garantindo flexibilidade para o catálogo de quadras. 
+
+Quais tecnologias serão empregadas no desenvolvimento? 
+O backend será desenvolvido em Python, aproveitando sua alta produtividade, legibilidade e ecossistema robusto de bibliotecas. A escolha do framework Django se justifica por sua robustez e por oferecer recursos nativos essenciais, como autenticação, ORM (o "tradutor" que leva os dados do código Python para o PostgreSQL) e painel administrativo, o que facilita a integração com diferentes serviços e APIs.
+Para o frontend, será utilizado o framework React Native, permitindo o desenvolvimento de uma aplicação mobile nativa para iOS e Android a partir de uma única base de código. Essa escolha garante alta performance, uma interface de usuário fluida e agilidade na entrega, integrando-se perfeitamente às APIs do backend Django para o consumo de dados em tempo real.
+
+Como será garantida a segurança dos dados dos usuários? 
+Através de criptografia SSL em trânsito e conformidade com a LGPD para o armazenamento de dados pessoais. 
+
+Qual a estratégia de backup? 
+Backups diários automatizados da base de dados PostgreSQL para evitar perda de dados cadastrais, histórico de alugueis e transações.
+
+Como será feita a integração com mapas? 
+Uso de APIs de geolocalização para busca de quadras próximas ao usuário. 
+
+O sistema funcionará em quais plataformas?
+O sistema funcionará como uma aplicação mobile nativa disponível para os sistemas operacionais iOS e Android.
+
+Qual o nível de experiência da equipe com as tecnologias?
+O desenvolvimento será realizado por Giovanni Mioto, profissional que possui proficiência no desenvolvimento mobile utilizando React Native e JavaScript, backend e engenharia de dados, detém experiência sólida com Python, SQL e criação de integrações via API, além de manutenção de pipelines de dados e versionamento de código com Git e GitHub. A experiência inclui ainda a modelagem de bancos de dados relacionais e a implementação de processos de ETL e transformação de dados.
+
+2.4 Questões Operacionais
+Como será garantido que o sistema seja fácil de usar? 
+Através de requisitos de experiência do usuário (UX) que visam interações fluidas.
+
+Como o proprietário gerencia o catálogo?
+O sistema permitirá registrar, remover e editar as informações de forma centralizada.
+
+Como os usuários avaliam a qualidade do serviço? 
+O sistema fornecerá um módulo para atribuição de notas e comentários.
+
+O sistema funcionará sem interrupções de agendamento? 
+Sim, o objetivo é garantir que o fluxo de locação seja intuitivo e dinâmico.
+
+Há legislação específica para a área? 
+Sim, o projeto deve observar a legislação vigente para negócios digitais e proteção de dados.
+
+Como o cliente confirma a reserva? 
+Através do pagamento associado e confirmação imediata no catálogo.
+
+Como os sentimentos dos usuários serão monitorados? 
+Através da análise dos requisitos de UX que resultam do contato com o produto.
+
+Como é garantido que o sistema funcione 24/7? 
+Utilização de infraestrutura em nuvem com redundância de servidores.
+
+2.5 Requisitos Funcionais, Não Funcionais, Restrições de Projeto e Requisitos de Experiência do Usuário
+Abaixo, encontra-se uma sequência de tabelas com todos os requisitos e restrições que foram elaboradas para o projeto, juntamente com as descrições de cada item.
+
+
+2.5.1 Requisitos Funcionais
+Tabela 1 - Requisitos Funcionais
+RF01
+O sistema deve permitir o cadastro e login distintos para clientes (proprietários) e usuários (praticantes de esportes).
+RF02
+O sistema deve permitir aos clientes registrar, remover e editar o catálogo de quadras esportivas, incluindo o tipo de esporte, endereço, preço por hora e horários disponíveis.
+RF03
+O sistema deve permitir o agendamento de quadras em tempo real pelos usuários, mostrando apenas os horários efetivamente disponíveis.
+RF04
+O sistema deve oferecer a possibilidade de adicionar o aluguel de equipamentos desportivos (como bolas e coletes) reserva da quadra.
+RF05
+O sistema deve processar pagamentos centralizados das reservas e equipamentos via PIX, carto de crédito e carto de débito.
+RF06
+O sistema deve incluir um módulo de avaliação para que os usuários atribuam notas e comentários s quadras e equipamentos.
+RF07
+O sistema deve enviar uma notificação ao proprietário e ao usuário imediatamente após um agendamento.
+RF08
+O sistema deve conceder ao usuário 10 minutos para realizar o pagamento após a reserva. Se não for efetuado, o horário deve voltar a ficar disponível.
+
+
+2.5.2 Requisitos não funcionais
+Tabela 2 – Requisitos não Funcionais
+RNF01
+O sistema deve garantir a atualização e sincronização de horários de agendamento em tempo real para evitar reservas duplicadas.
+RFN02
+O sistema deve suportar integração segura com gateways de pagamento.
+RFN03
+Toda comunicação e transmissão de dados deve utilizar criptografia SSL.
+RFN04
+O sistema deve realizar backups diários e automatizados do banco de dados (PostgreSQL).
+RNF05
+O sistema deve operar de forma contínua (24/7), utilizando infraestrutura em nuvem com redundância de servidores.
+RFN06
+O sistema deve tratar dados de acordo com a Lei Geral de Proteção de Dados (LGPD).
+
+
+
+2.5.3 Restrições de Projeto	
+Requisitos de Projeto: são aqueles requisitos que impõe limitações sobre o projeto do sistema, ou sobre os processos que são utilizados para construir um sistema.
+Tabela 3 - Requisitos de Projeto
+RP01
+O orçamento total para o desenvolvimento do sistema não pode exceder R$ 10.000,00.
+RP02
+O backend do sistema deve ser desenvolvido em Python utilizando o framework Django.
+RP03
+O frontend do sistema deve ser desenvolvido em React Native como uma aplicação mobile nativa para iOS e Android.
+RP04
+O sistema deve utilizar o banco de dados PostgreSQL.
+RP05
+A infraestrutura de hospedagem deve ser baseada em nuvem (AWS/Azure/GCP)
+
+
+2.5.4 Requisitos de Experiência do Usuário
+Abordam a interação do usuário com o produto e as percepções que resultam desse contato.
+Tabela 4 - Requisitos de Experiência do Usuário
+RUX01
+O sistema deve apresentar uma interface intuitiva e dinâmica, facilitando o agendamento de quadras.
+RUX02
+O sistema deve fornecer um painel administrativo intuitivo para a gesto do negócio por parte dos proprietários.
+RUX03
+O fluxo de locação do sistema deve garantir navegação dinâmica e fluida sem interrupções.
+
+
+
+
+
+2.6 Estimativa de Esforço de Software com Planning Poker
+Para estimar os esforços necessários no desenvolvimento do software, utilizamos o método de Planning Poker. Nesse processo, a equipe de desenvolvimento (Giovanni Mioto) avaliou a complexidade de cada requisito funcional identificado e atribuiu uma estimativa de esforço em horas, utilizando a sequência de Fibonacci.
+Tabela 5 - Estimativa de horas de trabalho
+Requisito Funcional
+Descrição Resumida
+Estimativa (Horas)
+RF01
+Cadastro e login de clientes e usuários
+2
+RF02
+Gerir catálogo de quadras (adicionar/remover)
+3
+RF03
+Agendar quadras e equipamentos
+5
+RF04
+Processamento de pagamentos
+3
+RF05
+Sistema de avaliações
+2
+Total
+Soma das estimativas de esforço do MVP
+15
+
+
+
+3 ESTUDO DE VIABILIDADE
+
+Este capítulo apresenta a análise aprofundada da viabilidade de implementação do Aplicativo QuadrAki. O estudo investiga as necessidades informacionais dos potenciais usuários (proprietários e usuários esportistas), determina os requisitos de recursos necessários para o desenvolvimento e implantação, analisa a relação custos/benefícios esperados, e com isso posto, conclui-se a viabilidade geral do projeto nas dimensões organizacional, econômica, técnica e operacional. Este estudo tem por objetivo fornecer uma análise que permita decidir com discernimento entre o prosseguimento do desenvolvimento do sistema ou não.
+
+3.1 Viabilidade Organizacional
+A viabilidade organizacional analisa quão bem o sistema proposto se alinha com os objetivos estratégicos da organização e se a mesma está preparada para adotá-lo. 
+O QuadrAki apoia diretamente os objetivos estratégicos dos estabelecimentos esportivos ao propor a modernização e digitalização do agendamento de quadras e equipamentos.Apoio aos Objetivos: 
+O sistema é fundamental para estabelecimentos que buscam inovação e otimização de tempo. Ao automatizar o agendamento em tempo real, a equipe do estabelecimento poderá dedicar mais tempo ao atendimento presencial e à manutenção do espaço, mitigando processos burocráticos.Impacto na Rotina: Espera-se um impacto positivo com a redução drástica do atendimento manual via telefone ou WhatsApp, além da eliminação de erros humanos como reservas duplicadas. 
+A implementação demandará um período de adaptação para o proprietário, mas o fornecimento de um painel administrativo intuitivo (RUX02) visa minimizar resistências e garantir a adoção plena.Cultura Organizacional: A implantação de um aplicativo nativo e moderno fortalece a imagem do estabelecimento como inovador e focado na conveniência do usuário (RUX01), o que ajuda a atrair e fidelizar mais esportistas.
+
+3.2 Viabilidade Econômica
+A viabilidade econômica avalia se os benefícios financeiros e de valor agregado justificam o investimento necessário para o desenvolvimento e manutenção do sistema. O projeto tem um orçamento total estipulado em R$ 10.000,00.
+Custos Envolvidos: Os principais custos durante o desenvolvimento incluem a infraestrutura tecnológica, licenciamentos e salários da equipe. Contudo, a escolha de tecnologias majoritariamente de código aberto (Python, React Native, PostgreSQL) ajuda a minimizar custos diretos de licença. Os custos pós-implantação envolvem hospedagem em nuvem (AWS/Azure/GCP) e atualizações de segurança.
+Benefícios Econômicos: Redução de Custos e Inadimplência: A centralização de pagamentos via PIX e cartões reduz ociosidade por falta de comparecimento (no-show sem pagamento), além de otimizar o tempo da equipe.
+Aumento de Receita: O sistema permite o up-sell inteligente através da oferta de aluguel de equipamentos extras (bolas, coletes) integrados à reserva principal.Melhoria na Gestão: O proprietário passa a ter maior controle financeiro e gerencial sobre as locações.Relação Custo-Benefício: Será mensurada pela economia de tempo na gestão manual e pelo aumento no volume de transações mensais. 
+O financiamento inicial será provido pela Devsolve Engineering, sendo a viabilidade econômica considerada alta devido ao rápido tempo de retorno do investimento (payback).
+
+3.3 Viabilidade Técnica
+A viabilidade técnica avalia se a tecnologia necessária existe, é adequada e se a equipe possui as habilidades exigidas para a sua execução. 
+Tecnologias Escolhidas: O sistema operará com arquitetura em nuvem (AWS/Azure/GCP). O backend será desenvolvido em Python utilizando o framework Django (aproveitando seu ORM e painel nativo), enquanto o banco de dados relacional escolhido é o PostgreSQL. Para o frontend, o uso do framework React Native garantirá um aplicativo mobile unificado para iOS e Android. Estas ferramentas são robustas, altamente escaláveis e perfeitamente adequadas ao ecossistema proposto. 
+Nível de Conhecimento: A equipe liderada por Giovanni Mioto possui experiência consolidada e proficiência nestas tecnologias. Há histórico técnico comprovado no desenvolvimento de interfaces com React Native e JavaScript, estruturação de bancos de dados relacionais com SQL, e programação backend/API com Python. O versionamento seguro com Git e GitHub será adotado como padrão de qualidade. Diante disso, o projeto possui viabilidade técnica plena.
+
+3.4 Viabilidade Operacional
+Avalia se o sistema funcionará corretamente dentro das rotinas dos estabelecimentos esportivos e será aceito de forma fluida pelos clientes.
+Aceitação dos Usuários Finais: A aceitação é impulsionada pela conveniência do acesso via smartphone. O requisito de Experiência do Usuário (RUX03) garante que o fluxo de locação seja fluido e sem interrupções. A interface limpa e intuitiva evita barreiras tecnológicas para usuários menos experientes. 
+Legislação Específica: Por se tratar de um sistema que coleta informações cadastrais e processa pagamentos centralizados, a observância rigorosa à Lei Geral de Proteção de Dados (LGPD) é mandatória (RNF06). Toda a infraestrutura contará com comunicação via criptografia SSL para segurança de dados em trânsito (RNF03). Adicionalmente, as políticas de cancelamento e estorno devem ser pautadas no Código de Defesa do Consumidor.
+3.5 Recursos a serem utilizados
+Este tópico lista os recursos computacionais (hardware e software) necessários para garantir a confecção, teste e hospedagem do sistema.
+
+3.5.1 Recursos de Hardware: 
+Desenvolvimento: Computadores portáteis e desktops da equipe de desenvolvimento com processamento e memória RAM adequados para rodar o ambiente integrado, contêineres e simuladores mobile (Android/iOS) localmente.
+
+3.5.1.1 Operação: 
+Smartphones com conectividade à internet para os testes de homologação dos usuários.
+
+3.5.2 Recursos de Software:
+Desenvolvimento e Versionamento: IDEs de mercado (como VS Code), e plataformas para versionamento e controle de código-fonte (Git e GitHub).
+
+3.5.2.1 Linguagens e Frameworks: 
+Python, Django, React Native, Node.js (Expo) e Sistema Operacional nativo das máquinas de desenvolvimento.
+
+3.5.2.2 Banco de Dados: 
+PostgreSQL para arquitetura relacional e gestão de dados estruturados.
+
+3.5.2.3 Hospedagem: 
+Provisão em provedores Cloud (AWS, Azure ou Google Cloud Platform) com capacidade de escalonamento vertical e redundância.
+
+4 RESULTADOS
+4.1 CONTEÚDO DOS RESULTADOS
+As seções abaixo apresentam o diagrama dos casos de uso do sistema e cada uma das tabelas com suas especificações. Também neste capítulo será contemplado com o diagrama de classes do sistema, em que são identificadas todas as classes necessárias para implementar um sistema funcional.
+
+4.2 MODELAGEM
+
+Requisito Funcional
+Casos de Uso Relacionados
+RF01
+UC001, UC002
+RF02
+UC006
+RF03
+UC004, UC008, UC009
+RF04
+UC010
+RF05
+UC011
+
+4.2.1 Diagrama de Casos de Uso
+Todos os requisitos funcionais precisam passar pelos casos de uso UC001 e UC002, para que seja possível acessar o sistema e recuperar as informações coerentes com o tipo de usuário (seja ele um praticante de esportes ou um proprietário de estabelecimento). Na Tabela 5 é possível conferir a descrição correspondente ao código de cada caso de uso.
+O requisito funcional RF01 - Cadastro e login de utilizadores, é atendido pelos casos de uso UC001 e UC002.
+O requisito funcional RF02 - Gerir catálogo de quadras, é atendido pelo caso de uso UC006.
+O requisito funcional RF03 - Agendar quadras e equipamentos, é atendido pelos casos de uso UC004, UC008 e UC009.
+O requisito funcional RF04 - Processamento de pagamentos, é atendido pelo caso de uso UC010.
+O requisito funcional RF05 - Sistema de avaliações, é atendido pelo caso de uso UC011.
+Adicionalmente, os casos de uso UC003, UC005, UC007 e UC012 foram elaborados para garantir a navegação fluida pelos menus e a gestão correta do histórico e das reservas ativas no sistema.
+
+
+
+Figura 1. Diagrama de Casos de Uso.
+
+Tabela 7 - Especificação do Caso de Uso UC001
+Item
+Descrição
+Nome do Caso de Uso
+UC001 – Escolher o tipo de usuário
+Descrição
+O diagrama representa a etapa inicial onde o utilizador define o seu perfil no aplicativo para ser direcionado ao fluxo correto.
+Ator principal
+Usuário
+Ator de Suporte
+Não se aplica
+Ator de Bastidor
+Não se aplica
+Pré-condições
+O aplicativo deve estar instalado e aberto no dispositivo móvel.
+Pós-condições
+O usuário é direcionado para a tela de login/cadastro correspondente ao seu perfil.
+Fluxo básico
+1. O sistema apresenta a tela inicial do aplicativo.2. O sistema exibe duas opções de perfil: "Sou Praticante" e "Sou Proprietário".3. O usuário clica na opção desejada.4. O sistema direciona o usuário para a interface específica do perfil escolhido (UC002).
+Fluxo alternativo
+N/A
+Regras de negócio
+N/A
+Fluxo de Exceção
+N/A
+
+Tabela 8 - Especificação do Caso de Uso UC002
+Item
+Descrição
+Nome do Caso de Uso
+UC002 – Realizar login
+Descrição
+Representa o processo de autenticação do usuário ou o registro de uma nova conta no sistema QuadrAki.
+Ator principal
+Praticante ou Proprietário.
+Ator de Suporte
+Não se aplica
+Ator de Bastidor
+Banco de dados
+Pré-condições
+O usuário ter selecionado o seu tipo de perfil (UC001).
+Pós-condições
+O usuário é autenticado e o sistema carrega o menu correspondente ao seu perfil.
+Fluxo básico
+1. O sistema solicita e-mail e senha.2. O usuário informa os dados e clica em "Entrar".3. O sistema valida as credenciais no banco de dados.4. O sistema concede o acesso e redireciona ao menu principal.
+Fluxo alternativo
+A. Cadastro de nova conta:1. No passo 1 do fluxo básico, o usuário seleciona "Criar nova conta".2. O sistema solicita os dados cadastrais (Nome, CPF/CNPJ, E-mail, Senha).3. O usuário preenche e confirma.4. O sistema salva os dados e executa o passo 4 do fluxo básico.
+Regras de negócio
+RN01: O cadastro de Proprietário exige um CNPJ válido.RN02: A senha deve conter no mínimo 8 caracteres.
+Fluxo de Exceção
+E1. Credenciais inválidas:1. No passo 3 do fluxo básico, o sistema não encontra correspondência.2. O sistema exibe a mensagem "E-mail ou senha incorretos".3. O fluxo retorna ao passo 1 do fluxo básico.
+
+Tabela 9 - Especificação do Caso de Uso UC003
+Item
+Descrição
+Nome do Caso de Uso
+UC003 – Apresentar menu de praticante
+Descrição
+Representa a interface central do esportista, onde ele tem acesso a todas as funcionalidades voltadas à locação.
+Ator principal
+Praticante.
+Ator de Suporte
+Não se aplica
+Ator de Bastidor
+Servidor (para carregamento)
+Pré-condições
+O praticante deve estar logado no sistema (UC002).
+Pós-condições
+O usuário seleciona uma funcionalidade para prosseguir.
+Fluxo básico
+1. O sistema identifica o perfil logado como "Praticante".2. O sistema carrega a interface gráfica do menu principal.3. O sistema exibe botões de atalho: "Buscar Quadras", "Minhas Reservas", "Histórico" e "Perfil".4. O praticante escolhe uma opção para navegar.
+Fluxo alternativo
+N/A
+Regras de negócio
+N/A
+Fluxo de Exceção
+E1. Falha de conexão:1. No passo 2, ocorre falha na comunicação com o servidor.2. O sistema exibe um alerta de "Sem conexão à internet".
+
+Tabela 10 - Especificação do Caso de Uso UC004
+Item
+Descrição
+Nome do Caso de Uso
+UC004 – Buscar e consultar disponibilidade de quadras
+Descrição
+Representa o motor de busca onde o praticante filtra os estabelecimentos por esporte, localização e horários disponíveis.
+Ator principal
+Praticante.
+Ator de Suporte
+Não se aplica
+Ator de Bastidor
+PostgreSQL, API de mapas
+Pré-condições
+O praticante deve estar no menu principal (UC003).
+Pós-condições
+O sistema exibe uma lista de quadras aptas para reserva no horário desejado.
+Fluxo básico
+1. O praticante clica em "Buscar Quadras".2. O sistema exibe os campos de filtro (Esporte, Data, Horário e Localização).3. O praticante preenche os filtros e clica em "Pesquisar".4. O sistema consulta o banco de dados PostgreSQL.5. O sistema retorna uma lista com os estabelecimentos correspondentes e os horários livres.
+Fluxo alternativo
+A. Busca por Geolocalização:1. No passo 2, o usuário seleciona "Quadras perto de mim".2. O sistema aciona a API de mapas do dispositivo.3. O fluxo retorna ao passo 4 do fluxo básico, ordenando os resultados por proximidade.
+Regras de negócio
+RN03: O sistema só deve retornar no resultado (passo 5) quadras que não possuam reservas confirmadas para a data e hora solicitadas.
+Fluxo de Exceção
+E1. Nenhuma quadra encontrada:1. No passo 4, o banco de dados não retorna resultados para os filtros.2. O sistema exibe a mensagem "Nenhuma quadra disponível para estes critérios".3. O sistema oferece a opção de limpar os filtros e retornar ao passo 2 do fluxo básico.
+
+Tabela 11 - Especificação do Caso de Uso UC005
+Item
+Descrição
+Nome do Caso de Uso
+UC005 – Apresentar menu de proprietário
+Descrição
+Representa o painel de controlo (dashboard) exclusivo para o gestor do estabelecimento desportivo.
+Ator principal
+Proprietário.
+Ator de Suporte
+Não se aplica
+Ator de Bastidor
+Banco de dados
+Pré-condições
+O proprietário deve ter efetuado login com sucesso (UC002).
+Pós-condições
+O utilizador seleciona uma funcionalidade de gestão para prosseguir.
+Fluxo básico
+1. O sistema identifica o perfil logado como "Proprietário".2. O sistema carrega o ecrã do painel administrativo.3. O sistema exibe métricas diárias e os botões: "Gerir Catálogo", "Reservas Ativas", "Histórico" e "Configurações".4. O utilizador escolhe uma opção de navegação.
+Fluxo alternativo
+N/A
+Regras de negócio
+N/A
+Fluxo de Exceção
+E1. Falha de carregamento:1. Ocorrem erros na obtenção das métricas do banco de dados.2. O sistema exibe os menus, mas apresenta a mensagem "Não foi possível carregar as estatísticas do dia".
+
+Tabela 12 - Especificação do Caso de Uso UC006
+Item
+Descrição
+Nome do Caso de Uso
+UC006 – Gerenciar catálogo de quadras
+Descrição
+Permite ao proprietário adicionar novas quadras, editar informações (preços, horários) ou remover instalações.
+Ator principal
+Proprietário.
+Ator de Suporte
+Não se aplica
+Ator de Bastidor
+PostgreSQL
+Pré-condições
+O banco de dados PostgreSQL é atualizado com as novas informações do catálogo.
+Pós-condições
+O utilizador seleciona uma funcionalidade de gestão para prosseguir.
+Fluxo básico
+1. O utilizador clica em "Gerir Catálogo".2. O sistema lista as quadras atualmente registadas.3. O utilizador clica em "Adicionar Nova Quadra".4. O sistema exibe um formulário (nome, desporto, tipo de piso, valor por hora, fotografias).5. O utilizador preenche os dados e guarda.6. O sistema valida os dados e atualiza o catálogo.
+Fluxo alternativo
+A. Editar ou Remover Quadra:1. No passo 2, o utilizador seleciona uma quadra existente.2. O utilizador altera os dados ou clica em "Remover".3. O sistema pede confirmação.4. O sistema atualiza ou oculta a quadra no catálogo.
+Regras de negócio
+RN04: Uma quadra não pode ser removida se possuir reservas futuras já pagas e confirmadas.
+Fluxo de Exceção
+E1. Campos obrigatórios em falta:1. No passo 6, o sistema detecta que o valor por hora não foi preenchido.2. O sistema impede a gravação e destaca o campo a vermelho.
+
+Tabela 13 - Especificação do Caso de Uso UC007
+Item
+Descrição
+Nome do Caso de Uso
+UC007 – Apresentar histórico de locações
+Descrição
+Exibe a listagem de locações passadas, servindo tanto para o praticante ver onde jogou, como para o proprietário auditar o uso.
+Ator principal
+Praticante ou Proprietário.
+Ator de Suporte
+Não se aplica
+Ator de Bastidor
+Banco de dados
+Pré-condições
+Utilizador autenticado no sistema.
+Pós-condições
+O utilizador visualiza o registo de todas as atividades passadas.
+Fluxo básico
+1. O utilizador acede à opção "Histórico".2. O sistema consulta a tabela de reservas com data inferior à atual.3. O sistema exibe as reservas ordenadas da mais recente para a mais antiga, mostrando o status final (concluída ou cancelada).
+Fluxo alternativo
+N/A
+Regras de negócio
+N/A
+Fluxo de Exceção
+E1. Histórico vazio:1. O banco de dados não retorna registos.2. O sistema exibe a mensagem "Ainda não possui atividades registadas no seu histórico".
+
+Tabela 14 - Especificação do Caso de Uso UC008
+Item
+Descrição
+Nome do Caso de Uso
+UC008 – Realizar reserva de quadra
+Descrição
+Ação principal do praticante para efetuar o bloqueio de um horário numa quadra específica.
+Ator principal
+Praticante.
+Ator de Suporte
+Não se aplica
+Ator de Bastidor
+Não se aplica
+Pré-condições
+Ter efetuado a busca e encontrado um horário disponível (UC004).
+Pós-condições
+O horário é pré-reservado, iniciando a contagem decrescente para o pagamento.
+Fluxo básico
+1. Na lista de resultados, o utilizador seleciona a quadra e o horário desejado.2. O sistema exibe o resumo da reserva (Local, Data, Hora, Valor).3. O utilizador clica em "Avançar para Reserva".4. O sistema altera o status do horário para "Aguardando Pagamento" e envia para o UC009 e UC010.
+Fluxo alternativo
+N/A
+Regras de negócio
+RN05: O horário fica temporariamente bloqueado para outros utilizadores a partir do passo 4.
+Fluxo de Exceção
+E1. Conflito de concorrência:1. No passo 3, o sistema verifica que outro utilizador concluiu a reserva do mesmo horário frações de segundo antes.2. O sistema exibe: "Lamentamos, este horário acabou de ser reservado".
+
+Tabela 15 - Especificação do Caso de Uso UC009
+Item
+Descrição
+Nome do Caso de Uso
+UC009 – Adicionar aluguel de equipamentos à reserva
+Descrição
+Oferece itens extras (bolas, coletes, raquetes) para incrementar a reserva do desportista.
+Ator principal
+Praticante.
+Ator de Suporte
+Não se aplica
+Ator de Bastidor
+Não se aplica
+Pré-condições
+A reserva da quadra ter sido iniciada (UC008).
+Pós-condições
+O valor total a pagar é recalculado e os itens são adicionados à locação.
+Fluxo básico
+1. O sistema exibe um ecrã intermédio: "Deseja adicionar equipamentos?".2. O sistema lista os itens disponíveis na quadra selecionada (com foto e preço).3. O utilizador seleciona a quantidade de bolas ou coletes desejada.4. O sistema atualiza o carrinho e avança para o pagamento.
+Fluxo alternativo
+A. Ignorar equipamentos:1. No passo 1, o utilizador clica em "Não, obrigado. Avançar".2. O sistema prossegue imediatamente para o pagamento sem alterar o valor base.
+Regras de negócio
+RN06: O sistema apenas exibe itens que o proprietário registou como disponíveis em stock para aquela quadra.
+Fluxo de Exceção
+N/A
+
+Tabela 16 – Especificação do Caso de Uso UC010
+Item
+Descrição
+Nome do Caso de Uso
+UC010 – Processar pagamento
+Descrição
+Efetivação financeira da reserva via gateways de pagamento integrados.
+Ator principal
+Praticante (inicia)
+Ator de Suporte
+Não se aplica
+Ator de Bastidor
+Sistema (processa), Gateway de Pagamento
+Pré-condições
+O utilizador confirmou o resumo da reserva e equipamentos.
+Pós-condições
+A reserva é confirmada no banco de dados e as notificações são disparadas.
+Fluxo básico
+1. O sistema exibe as opções de pagamento (PIX, Cartão de Crédito/Débito)2. O utilizador seleciona PIX.3. O sistema gera o código Cópia e Cola / QR Code.4. O utilizador efetua o pagamento na sua aplicação bancária.5. O gateway notifica o sistema via webhook.6. O sistema confirma a reserva e dispara notificação (RF07).
+Fluxo alternativo
+A. Pagamento com Cartão:1. No passo 2, o utilizador seleciona Cartão de Crédito.2. Insere os dados encriptados do cartão.3. O gateway autoriza a transação.4. O sistema avança para o passo 6 do fluxo básico.
+Regras de negócio
+RN07 (RF08): O utilizador tem exatamente 10 minutos para concluir o pagamento do PIX ou a validação do cartão.
+Fluxo de Exceção
+E1. Timeout de Pagamento:1. O tempo de 10 minutos expira sem notificação de sucesso.2. O sistema cancela a pré-reserva, liberta o horário e avisa o utilizador.
+
+Tabela 17 - Especificação do Caso de Uso UC011
+Item
+Descrição
+Nome do Caso de Uso
+UC011 – Avaliar quadras e equipamentos
+Descrição
+Sistema de feedback após o uso das instalações desportivas.
+Ator principal
+Praticante.
+Ator de Suporte
+Não se aplica
+Ator de Bastidor
+PostgreSQL
+Pré-condições
+A data e hora da reserva devem já ter passado (status concluída).
+Pós-condições
+A avaliação é guardada e afeta a média do estabelecimento no catálogo.
+Fluxo básico
+1. O sistema envia uma notificação push a pedir a avaliação.2. O utilizador acede ao ecrã de feedback.3. O utilizador atribui de 1 a 5 estrelas e digita um comentário opcional.4. O sistema processa o texto (filtro de palavras impróprias) e guarda no PostgreSQL.
+Fluxo alternativo
+N/A
+Regras de negócio
+RN08: Apenas utilizadores que efetivamente concretizaram e pagaram a reserva podem avaliar a quadra.
+Fluxo de Exceção
+N/A
+
+Tabela 18 - Especificação do Caso de Uso UC012
+Item
+Descrição
+Nome do Caso de Uso
+UC012 – Gerenciar reservas ativas
+Descrição
+Interface onde o proprietário visualiza a sua agenda e as marcações confirmadas para os próximos dias.
+Ator principal
+Proprietário
+Ator de Suporte
+Não se aplica
+Ator de Bastidor
+Banco de dados, Sistema (para estorno)
+Pré-condições
+O proprietário deve estar logado no sistema.
+Pós-condições
+Visibilidade completa da ocupação do espaço.
+Fluxo básico
+1. O proprietário clica em "Reservas Ativas".2. O sistema exibe uma interface em formato de calendário/agenda diária.3. O proprietário visualiza os blocos de horários ocupados, contendo o nome do praticante e se alugou equipamentos.4. O proprietário utiliza esta informação para preparar a quadra para a chegada do cliente.
+Fluxo alternativo
+A. Cancelamento por força maior:1. O proprietário seleciona uma reserva confirmada.2. Clica em "Cancelar Reserva" (motivos: chuva intensa, problemas na infraestrutura).3. O sistema alerta o praticante e inicia o processo de estorno financeiro.
+Regras de negócio
+RN09: O cancelamento via UC012 aciona obrigatoriamente as regras de defesa do consumidor para reembolso.
+Fluxo de Exceção
+N/A
+
+
+4.3.1 Diagrama de Classes
+A figura 2 representa o diagrama de classes do sistema, em que são identificadas todas as classes necessárias à sua implementação.
+
+
+Figura 2. Diagrama de Classes.
+
+4.3.2 Dicionário de Informações 
+O dicionário de informações lista cada atributo das classes do sistema e suas descrições.
+
+Tabela 19 - Dicionário de dados da classe usuário.
+Atributo
+Descrição
+Tipo
+Obrigatório
+id_usuario
+Identificador único do usuário (Chave Primária).
+Serial/Int
+Sim
+nome
+Nome completo ou razão social do usuário.
+Varchar(100)
+Sim
+email
+Endereço eletrônico para login e notificações.
+Varchar(100)
+Sim
+senha
+Chave de acesso criptografada.
+Varchar(255)
+Sim
+telefone
+Número de contacto com DDD.
+Varchar(15)
+Não
+cpf_cnpj
+Cadastro de Pessoa Física ou Jurídica para validação.
+Varchar(20)
+Sim
+tipo_usuario
+Define se o perfil é "Esportista" ou "Proprietário".
+Varchar(20)
+Sim
+
+Tabela 20 - Dicionário de dados da classe quadras.
+Atributo
+Descrição
+Tipo
+Obrigatório
+id_quadra
+Identificador único da quadra (Chave Primária).
+Serial/Int
+Sim
+nome
+Nome identificador da quadra (ex: Quadra A).
+Varchar(50)
+Sim
+endereco
+Localização física completa da instalação.
+Varchar(150)
+Sim
+valor
+Preço base da locação por hora.
+Numeric(10,2)
+Sim
+tipo_piso
+Tipo de superfície (Saibro, Cimento, Sintético, etc).
+Varchar(30)
+Sim
+id_usuario
+Identificador do proprietário responsável (Chave Estrangeira).
+Int
+Sim
+
+Tabela 21 - Dicionário de dados da classe agendamentos.
+Atributo
+Descrição
+Tipo
+Obrigatório
+id_agendamento
+Identificador único da reserva (Chave Primária).
+Serial/Int
+Sim
+data_agendamento
+Data prevista para a realização do evento.
+Date
+Sim
+hora_inicio
+Horário de início da locação.
+Time
+Sim
+hora_fim
+Horário de término da locação.
+Time
+Sim
+valor
+Valor total da reserva (quadra + extras).
+Numeric(10,2)
+Sim
+status_pagamento
+Situação da transação (Pendente, Pago, Cancelado).
+Varchar(20)
+Sim
+id_usuario
+Identificador do esportista que reservou (Chave Estrangeira).
+Int
+Sim
+id_quadra
+Identificador da quadra reservada (Chave Estrangeira).
+Int
+Sim
+
+Tabela 22 - Dicionário de dados da classe avaliações.
+Atributo
+Descrição
+Tipo
+Obrigatório
+id_avaliacao
+Identificador único da avaliação (Chave Primária).
+Serial/Int
+Sim
+nota
+Pontuação atribuída de 1 a 5.
+Int
+Sim
+comentario
+Texto descritivo com a opinião do usuário.
+Text
+Não
+data_avaliacao
+Data em que o feedback foi registrado.
+Date
+Sim
+id_usuario
+Identificador do autor da avaliação (Chave Estrangeira).
+Int
+Sim
+id_quadra
+Identificador da quadra avaliada (Chave Estrangeira).
+Int
+Sim
+
+Tabela 23 - Dicionário de dados da classe equipamentos.
+Atributo
+Descrição
+Tipo
+Obrigatório
+id_equipamento
+Identificador único do material (Chave Primária).
+Serial/Int
+Sim
+descricao
+Nome do item (ex: Bola de Futsal, Colete).
+Varchar(50)
+Sim
+valor
+Preço do aluguel unitário por período.
+Numeric(10,2)
+Sim
+id_quadra
+Identificador da quadra que possui o item (Chave Estrangeira).
+Int
+Sim
+
+Tabela 24 - Dicionário de dados da classe aluguel_equipamentos.
+Atributo
+Descrição
+Tipo
+Obrigatório
+id_aluguel
+Identificador da relação agendamento-item (Chave Primária).
+Serial/Int
+Sim
+quantidade
+Número de unidades locadas.
+Int
+Sim
+valor
+Subtotal calculado para o item nesta reserva.
+Numeric(10,2)
+Sim
+id_agendamento
+Vínculo com a reserva principal (Chave Estrangeira).
+Int
+Sim
+id_equipamento
+Vínculo com o cadastro do material (Chave Estrangeira).
+Int
+Sim
+
+
+4.4 Diagrama de Objetos (Instâncias)
+O Diagrama de Objetos, apresentado na Figura 3 a seguir, ilustra instâncias concretas e específicas das classes definidas no Diagrama de Classes. Esta representação visa demonstrar o funcionamento do sistema em um momento particular, exibindo os dados reais que seriam armazenados e a forma como os objetos se relacionam no banco de dados.
+
+
+Figura 3. Diagrama de Objetos (Instâncias).
+
+
+4.5 Diagramas de Sequência
+Os diagramas de sequência detalham a ordem cronológica e a interação entre os objetos (classes) do sistema para a execução de um caso de uso específico. Cada diagrama ilustra o fluxo de mensagens e a colaboração necessária entre as classes Usuário, Quadras, Agendamentos, Equipamentos e Aluguel_Equipamentos (conforme definido no Diagrama de Classes), bem como as interações com o Sistema e o Gateway de Pagamento, para cumprir o objetivo do respectivo caso de uso.
+A seguir, são apresentados os diagramas de sequência para os principais casos de uso do sistema QuadrAki, focando na lógica de agendamento e pagamento.
+
+
+Figura 4 - Escolher o tipo de usuário (UC001)
+
+Figura 5 - Realizar Login (UC002)
+
+Figura 6 - Apresenta menu praticante (UC003)
+
+Figura 7 - Buscar e Consultar Disponibilidade (UC004)
+
+Figura 8 - Apresenta menu de proprietário (UC005)
+
+Figura 9 - Gerenciar catálogo de quadras (UC006)
+
+
+Figura 10 - Apresentar histórico de locações (UC007)
+
+Figura 11 - Realizar Reserva de Quadra (UC008)
+
+Figura 12 - Adicionar aluguel de equipamentos à reserva (UC009)
+
+Figura 13 - Processar Pagamento via PIX (UC010)
+
+Figura 14 - Avaliar quadras e equipamentos (UC011)
+
+Figura 15 - Gerenciar reservas ativas (UC0012)
+
+
+
+
+
+
+5 CONCLUSÕES
+
+As conclusões do trabalho devem ser expostas de maneira clara, lógica e concisa. Fale das dificuldades e facilidades encontradas durante a execução do projeto até o momento.  As conclusões devem estar relacionadas aos objetivos específicos.
+
+
+
+
+6 REFERÊNCIAS BIBLIOGRÁFICAS
+
+Coloque aqui as referências bibliográficas. Todas as referências bibliográficas devem ser citadas no texto. Coloque, no mínimo, 5 (cinco) referências bibliográficas. .As referências bibliográficas devem ser baseadas nas normas da ABNT. Utilize as “Normas para Elaboração de Trabalhos Acadêmicos” da UTFPR, disponível no portal da universidade. A seguir, diversos exemplos. 
+
+
+
+
+
+APÊNDICE A – Título do Apêndice
+Elemento opcional, que consiste em texto ou documento elaborado pelo autor, a fim de complementar sua argumentação, sem prejuízo da unidade nuclear do trabalho.
+Os apêndices devem ser identificados por letras maiúsculas consecutivas, seguidas de travessão e respectivo título.
+
+
+
+
+
+
+
+
+
+
+
+
+ANEXO A – Título do Anexo
+Elemento opcional, que consiste em texto ou documento não elaborado pelo autor, que serve de fundamentação, comprovação e ilustração.
+Os anexos devem ser identificados por letras maiúsculas consecutivas, seguidas de travessão e respectivo título.
+
+
+
+
+
+
+
+
+
+
+
