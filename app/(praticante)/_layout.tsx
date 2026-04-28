@@ -46,6 +46,15 @@ export default function PraticanteLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="perfil"
+        options={{
+          title: "Perfil",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="person-circle-outline" size={24} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

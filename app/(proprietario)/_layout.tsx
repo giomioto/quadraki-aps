@@ -46,6 +46,27 @@ export default function ProprietarioLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="perfil"
+        options={{
+          title: "Perfil",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="person-circle-outline" size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="nova-quadra"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="editar-quadra"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
