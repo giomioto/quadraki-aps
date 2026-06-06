@@ -13,6 +13,7 @@ import {
     View,
 } from "react-native";
 import { UserRole, useUserProfile } from "../context/user-profiles-context";
+import { apiFetch } from "../services/api";
 
 export default function ModalScreen() {
   const params = useLocalSearchParams<{ role?: string }>();
@@ -24,7 +25,8 @@ export default function ModalScreen() {
   const { profile, updateProfile } = useUserProfile(role);
   const [name, setName] = useState(profile.name);
   const [email, setEmail] = useState(profile.email);
-  const [phone, setPhone] = useState(profile.phone);
+  const [phone, setPhone] = useState(profile.phone || "");
+  const [document, setDocument] = useState(profile.document || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -37,9 +39,20 @@ export default function ModalScreen() {
     router.replace("/(praticante)/perfil");
   };
 
-  const handleSave = () => {
-    if (!name.trim() || !email.trim() || !phone.trim()) {
-      Alert.alert("Erro", "Preencha nome, e-mail e telefone.");
+  const handleSave = async () => {
+    if (!name.trim() || !email.trim()) {
+      Alert.alert("Erro", "Preencha nome e e-mail.");
+      return;
+    }
+
+    const cleanedCpf = document.replace(/\D/g, "");
+    if (!cleanedCpf || cleanedCpf.length !== 11) {
+      Alert.alert("Erro", "O CPF deve conter exatamente 11 dígitos.");
+      return;
+    }
+
+    if (role === "proprietario" && !phone.trim()) {
+      Alert.alert("Erro", "Preencha o telefone.");
       return;
     }
 
@@ -55,14 +68,48 @@ export default function ModalScreen() {
       }
     }
 
-    updateProfile({
-      name: name.trim(),
-      email: email.trim(),
-      phone: phone.trim(),
-      ...(password ? { password } : {}),
-    });
+    try {
+      // 1. Enviar atualização ao backend
+      const endpoint = role === "proprietario"
+        ? `proprietarios/${profile.id_proprietario}`
+        : `usuarios/${profile.id_usuario}`;
 
-    goToProfile();
+      const body: any = {
+        nome: name.trim(),
+        email: email.trim(),
+        cpf: cleanedCpf,
+      };
+
+      if (role === "proprietario") {
+        body.telefone = phone.trim();
+      }
+
+      if (password) {
+        body.senha = password;
+      }
+
+      await apiFetch<any>(endpoint, {
+        method: "PATCH",
+        body: JSON.stringify(body),
+      });
+
+      // 2. Atualizar o contexto local
+      updateProfile({
+        name: name.trim(),
+        email: email.trim(),
+        document: cleanedCpf,
+        phone: role === "proprietario" ? phone.trim() : "",
+        ...(password ? { password } : {}),
+      });
+
+      // 3. Exibir popup de sucesso e retornar
+      Alert.alert("Sucesso", "Perfil atualizado com sucesso!", [
+        { text: "OK", onPress: () => goToProfile() }
+      ]);
+    } catch (error: any) {
+      console.error("Erro ao atualizar perfil:", error);
+      Alert.alert("Erro", error.message || "Não foi possível atualizar o perfil no servidor.");
+    }
   };
 
   return (
@@ -77,7 +124,7 @@ export default function ModalScreen() {
       >
         <View style={styles.header}>
           <View>
-            <Text style={styles.title}>Editar perfil</Text>
+            <Text style={[styles.title, { color: role === "proprietario" ? "#1565C0" : "#2E7D32" }]}>Editar perfil</Text>
             <Text style={styles.subtitle}>
               Atualize os dados do{" "}
               {role === "praticante" ? "praticante" : "proprietário"}.
@@ -100,15 +147,6 @@ export default function ModalScreen() {
             placeholder="Nome completo"
           />
 
-          <Text style={styles.label}>Telefone</Text>
-          <TextInput
-            style={styles.input}
-            value={phone}
-            onChangeText={setPhone}
-            placeholder="(11) 99999-9999"
-            keyboardType="phone-pad"
-          />
-
           <Text style={styles.label}>E-mail</Text>
           <TextInput
             style={styles.input}
@@ -118,6 +156,28 @@ export default function ModalScreen() {
             autoCapitalize="none"
             keyboardType="email-address"
           />
+
+          <Text style={styles.label}>CPF</Text>
+          <TextInput
+            style={styles.input}
+            value={document}
+            onChangeText={(text) => setDocument(text.replace(/\D/g, ""))}
+            placeholder="Apenas os 11 dígitos do CPF"
+            keyboardType="numeric"
+          />
+
+          {role === "proprietario" && (
+            <>
+              <Text style={styles.label}>Telefone</Text>
+              <TextInput
+                style={styles.input}
+                value={phone}
+                onChangeText={setPhone}
+                placeholder="Ex: (11) 98888-4321"
+                keyboardType="phone-pad"
+              />
+            </>
+          )}
 
           <Text style={styles.label}>Nova senha</Text>
           <TextInput
@@ -143,7 +203,10 @@ export default function ModalScreen() {
           </Text>
         </View>
 
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+        <TouchableOpacity 
+          style={[styles.saveButton, { backgroundColor: role === "proprietario" ? "#1565C0" : "#2E7D32" }]} 
+          onPress={handleSave}
+        >
           <Text style={styles.saveButtonText}>Salvar alterações</Text>
         </TouchableOpacity>
       </ScrollView>

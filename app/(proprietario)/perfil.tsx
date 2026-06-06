@@ -3,7 +3,7 @@ import { UserProfileScreen } from "../../components/user-profile-screen";
 import { useUserProfile } from "../../context/user-profiles-context";
 
 export default function PerfilProprietarioScreen() {
-  const { profile } = useUserProfile("proprietario");
+  const { profile, logout } = useUserProfile("proprietario");
 
   return (
     <UserProfileScreen
@@ -38,6 +38,7 @@ export default function PerfilProprietarioScreen() {
       }
       logoutLabel="Sair da conta"
       onLogoutPress={() => {
+        logout();
         router.dismissAll();
         router.replace("/");
       }}

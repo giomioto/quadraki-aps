@@ -1,36 +1,53 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
 } from "react-native";
+
+import { apiFetch } from "../services/api";
+import { useUserProfiles } from "../context/user-profiles-context";
 
 export default function CadastroScreen() {
   const { profile } = useLocalSearchParams();
   const isPraticante = profile !== "proprietario";
+  const { updateProfile } = useUserProfiles();
 
   const [nome, setNome] = useState("");
-  const [documento, setDocumento] = useState(""); // CPF ou CNPJ
+  const [documento, setDocumento] = useState(""); // CPF
+  const [telefone, setTelefone] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
 
-  const handleCadastro = () => {
+  const handleCadastro = async () => {
+    const missingFields: string[] = [];
+    if (!nome.trim()) missingFields.push("Nome Completo");
+    if (!documento.trim()) missingFields.push("CPF");
+    if (!isPraticante && !telefone.trim()) missingFields.push("Telefone");
+    if (!email.trim()) missingFields.push("E-mail");
+    if (!senha) missingFields.push("Senha");
+    if (!confirmarSenha) missingFields.push("Confirmar Senha");
+
+    if (missingFields.length > 0) {
+      Alert.alert(
+        "Atenção",
+        `Os seguintes campos estão faltando:\n- ${missingFields.join("\n- ")}`
+      );
+      return;
+    }
+
     if (senha.length < 8) {
       Alert.alert(
         "Atenção",
         "A senha deve ter no mínimo 8 caracteres.",
       );
-      return;
-    }
-    if (!isPraticante && documento.length < 14) {
-      Alert.alert("Atenção", "O proprietário precisa informar um CNPJ válido.");
       return;
     }
 
@@ -39,11 +56,62 @@ export default function CadastroScreen() {
       return;
     }
 
-    Alert.alert("Sucesso", "Cadastro concluído com sucesso!");
-    if (isPraticante) {
-      router.replace("/(praticante)");
-    } else {
-      router.replace("/(proprietario)");
+    try {
+      const docCleaned = documento.replace(/\D/g, "");
+      if (!docCleaned || docCleaned.length !== 11) {
+        Alert.alert("Atenção", "O CPF deve conter exatamente 11 dígitos.");
+        return;
+      }
+
+      if (isPraticante) {
+        const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+        const user = await apiFetch<any>("usuarios", {
+          method: "POST",
+          body: JSON.stringify({
+            nome: nome.trim(),
+            email: email.trim(),
+            data_cadastro: today,
+            senha: senha,
+            cpf: docCleaned,
+          }),
+        });
+
+        updateProfile("praticante", {
+          id_usuario: user.id_usuario,
+          name: user.nome,
+          email: user.email,
+          document: user.cpf || "",
+        });
+
+        Alert.alert("Sucesso", "Cadastro de praticante concluído com sucesso!");
+        router.replace("/(praticante)");
+      } else {
+        const owner = await apiFetch<any>("proprietarios", {
+          method: "POST",
+          body: JSON.stringify({
+            nome: nome.trim(),
+            email: email.trim(),
+            cpf: docCleaned,
+            telefone: telefone.trim(),
+            senha: senha,
+          }),
+        });
+
+        updateProfile("proprietario", {
+          id_proprietario: owner.id_proprietario,
+          name: owner.nome,
+          email: owner.email,
+          document: owner.cpf || "",
+          phone: owner.telefone || "",
+        });
+
+        Alert.alert("Sucesso", "Cadastro de proprietário concluído com sucesso!");
+        router.replace("/(proprietario)");
+      }
+    } catch (error: any) {
+      console.error(error);
+      const msg = error instanceof Error ? error.message : "Falha ao realizar cadastro. Tente novamente.";
+      Alert.alert("Erro", msg);
     }
   };
 
@@ -72,11 +140,22 @@ export default function CadastroScreen() {
         <TextInput
           style={styles.input}
           placeholderTextColor="#666"
-          placeholder={isPraticante ? "CPF" : "CNPJ"}
+          placeholder="CPF"
           keyboardType="numeric"
           value={documento}
-          onChangeText={setDocumento}
+          onChangeText={(text) => setDocumento(text.replace(/\D/g, ""))}
         />
+
+        {!isPraticante && (
+          <TextInput
+            style={styles.input}
+            placeholderTextColor="#666"
+            placeholder="Telefone"
+            keyboardType="phone-pad"
+            value={telefone}
+            onChangeText={setTelefone}
+          />
+        )}
 
         <TextInput
           style={styles.input}

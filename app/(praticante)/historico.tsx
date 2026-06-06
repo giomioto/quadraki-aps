@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Alert,
     FlatList,
@@ -8,85 +8,177 @@ import {
     TextInput,
     TouchableOpacity,
     View,
+    ActivityIndicator,
 } from "react-native";
+import { apiFetch } from "../../services/api";
+import { useUserProfile } from "../../context/user-profiles-context";
 
 export default function HistoricoPraticanteScreen() {
+  const { profile } = useUserProfile("praticante");
+  const idUsuarioLogado = profile.id_usuario;
+
   const [modalVisivel, setModalVisivel] = useState(false);
-  const [quadraSelecionada, setQuadraSelecionada] = useState<string | null>(
-    null,
-  );
+  const [quadraSelecionada, setQuadraSelecionada] = useState<string | null>(null);
+  const [selectedQuadraId, setSelectedQuadraId] = useState<number | null>(null);
   const [nota, setNota] = useState(0);
   const [comentario, setComentario] = useState("");
-  const historico = [
-    {
-      id: "1",
-      data: "12/03/2026",
-      quadra: "Arena Sports Curitiba",
-      esporte: "Futebol Society",
-      status: "Concluída",
-    },
-    {
-      id: "2",
-      data: "05/03/2026",
-      quadra: "Clube do Vôlei",
-      esporte: "Vôlei de Areia",
-      status: "Concluída",
-    },
-    {
-      id: "3",
-      data: "28/02/2026",
-      quadra: "Arena Sports Curitiba",
-      esporte: "Futebol Society",
-      status: "Cancelada",
-    },
-  ];
+  const [historico, setHistorico] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  async function loadHistorico() {
+    try {
+      const [agendamentos, quadras, rentals, equipments] = await Promise.all([
+        apiFetch<any[]>(`agendamentos/?id_usuario=${idUsuarioLogado}`),
+        apiFetch<any[]>("quadras"),
+        apiFetch<any[]>("aluguel-equipamentos"),
+        apiFetch<any[]>("equipamentos"),
+      ]);
+
+      const quadraMap = new Map(quadras.map(q => [q.id_quadra, q]));
+      const equipMap = new Map(equipments.map(e => [e.id_equipamento, e]));
+      
+      const mapped = agendamentos.map((ag) => {
+        const quadra = quadraMap.get(ag.id_quadra) || {};
+        let dataFmt = ag.data_agendamento;
+        if (ag.data_agendamento) {
+          const parts = ag.data_agendamento.split("-");
+          if (parts.length === 3) {
+            dataFmt = `${parts[2]}/${parts[1]}/${parts[0]}`;
+          }
+        }
+        let isPast = false;
+        if (ag.data_agendamento) {
+          const startTime = ag.hora_inicio || "00:00";
+          const bookingDate = new Date(`${ag.data_agendamento}T${startTime}:00`);
+          isPast = bookingDate < new Date();
+        }
+
+        let displayStatus = ag.status;
+        if (displayStatus !== "Cancelada") {
+          displayStatus = isPast ? "Concluída" : "Ativa";
+        }
+
+        const bookingRentals = rentals.filter((r) => r.id_agendamento === ag.id_agendamento);
+        const extraText = bookingRentals
+          .map((r) => {
+            const eq = equipMap.get(r.id_equipamento);
+            return eq ? `${r.quantidade} ${eq.descricao}` : `${r.quantidade}x Equipamento`;
+          })
+          .join(", ") || "Nenhum";
+
+        return {
+          id: String(ag.id_agendamento),
+          id_quadra: ag.id_quadra,
+          data: dataFmt,
+          quadra: quadra.nome || "Quadra não identificada",
+          esporte: quadra.esporte || "Esporte",
+          status: displayStatus,
+          isPast,
+          extra: extraText,
+          valor: ag.valor || 0,
+        };
+      });
+
+      setHistorico(mapped.reverse());
+    } catch (error) {
+      console.error("Erro ao carregar histórico:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadHistorico();
+  }, [idUsuarioLogado]);
+
+  const handleEnviarAvaliacao = async () => {
+    if (nota === 0) {
+      Alert.alert("Erro", "Por favor, escolha uma nota de 1 a 5 estrelas!");
+      return;
+    }
+
+    try {
+      const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+      await apiFetch("avaliacoes", {
+        method: "POST",
+        body: JSON.stringify({
+          id_usuario: idUsuarioLogado,
+          id_quadra: selectedQuadraId,
+          nota: nota,
+          comentario: comentario.trim(),
+          data_avaliacao: today,
+        }),
+      });
+
+      Alert.alert("Sucesso", "Avaliação enviada com sucesso!");
+      setModalVisivel(false);
+    } catch (error) {
+      console.error("Erro ao enviar avaliação:", error);
+      Alert.alert("Erro", "Falha ao enviar avaliação ao servidor.");
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.titulo}>Meu Histórico (UC007)</Text>
 
-      <FlatList
-        data={historico}
-        keyExtractor={(i) => i.id}
-        renderItem={({ item }) => (
-          <View
-            style={[
-              styles.card,
-              item.status === "Cancelada" && styles.cardCancelada,
-            ]}
-          >
-            <View style={styles.linhaTopo}>
-              <Text style={styles.data}>{item.data}</Text>
-              <Text
-                style={[
-                  styles.status,
-                  item.status === "Cancelada"
-                    ? styles.txtCancelado
-                    : styles.txtConcluida,
-                ]}
-              >
-                {item.status}
-              </Text>
-            </View>
-            <Text style={styles.quadra}>{item.quadra}</Text>
-            <Text style={styles.esporte}>{item.esporte}</Text>
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: "center" }}>
+          <ActivityIndicator size="large" color="#2E7D32" />
+        </View>
+      ) : (
+        <FlatList
+          data={historico}
+          keyExtractor={(i) => i.id}
+          ListEmptyComponent={
+            <Text style={{ textAlign: "center", color: "#666", marginTop: 20 }}>
+              Você ainda não possui histórico de reservas.
+            </Text>
+          }
+          renderItem={({ item }) => (
+            <View
+              style={[
+                styles.card,
+                item.status === "Cancelada" && styles.cardCancelada,
+                item.status === "Ativa" && styles.cardAtiva,
+              ]}
+            >
+              <View style={styles.linhaTopo}>
+                <Text style={styles.data}>{item.data}</Text>
+                <Text
+                  style={[
+                    styles.status,
+                    item.status === "Cancelada" && styles.txtCancelado,
+                    item.status === "Concluída" && styles.txtConcluida,
+                    item.status === "Ativa" && styles.txtAtiva,
+                  ]}
+                >
+                  {item.status}
+                </Text>
+              </View>
+              <Text style={styles.quadra}>{item.quadra}</Text>
+              <Text style={styles.esporte}>{item.esporte}</Text>
+              <Text style={styles.info}>⚽ Extras: {item.extra}</Text>
+              <Text style={styles.valorTotal}>💵 Valor Total: R$ {parseFloat(String(item.valor)).toFixed(2).replace(".", ",")}</Text>
 
-            {item.status === "Concluída" && (
-              <TouchableOpacity
-                style={styles.btnAvaliar}
-                onPress={() => {
-                  setQuadraSelecionada(item.quadra);
-                  setNota(0);
-                  setComentario("");
-                  setModalVisivel(true);
-                }}
-              >
-                <Text style={styles.txtBtn}>⭐ Avaliar Local (UC011)</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
-      />
+              {item.status === "Concluída" && (
+                <TouchableOpacity
+                  style={styles.btnAvaliar}
+                  onPress={() => {
+                    setQuadraSelecionada(item.quadra);
+                    setSelectedQuadraId(item.id_quadra);
+                    setNota(0);
+                    setComentario("");
+                    setModalVisivel(true);
+                  }}
+                >
+                  <Text style={styles.txtBtn}>⭐ Avaliar Local (UC011)</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+        />
+      )}
 
       {/* Modal de Avaliação */}
       <Modal
@@ -133,10 +225,7 @@ export default function HistoricoPraticanteScreen() {
 
               <TouchableOpacity
                 style={styles.modalButtonSubmit}
-                onPress={() => {
-                  Alert.alert("Sucesso", "Avaliação enviada com sucesso!");
-                  setModalVisivel(false);
-                }}
+                onPress={handleEnviarAvaliacao}
               >
                 <Text style={styles.modalButtonTextSubmit}>Enviar</Text>
               </TouchableOpacity>
@@ -171,6 +260,7 @@ const styles = StyleSheet.create({
     borderLeftColor: "#2E7D32",
   },
   cardCancelada: { borderLeftColor: "#d32f2f", opacity: 0.8 },
+  cardAtiva: { borderLeftColor: "#1976D2" },
   linhaTopo: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -180,8 +270,21 @@ const styles = StyleSheet.create({
   status: { fontSize: 14, fontWeight: "bold" },
   txtConcluida: { color: "#2E7D32" },
   txtCancelado: { color: "#d32f2f" },
-  quadra: { fontSize: 18, color: "#333", marginBottom: 5 },
-  esporte: { fontSize: 14, color: "#666", marginBottom: 15 },
+  txtAtiva: { color: "#1976D2" },
+  quadra: { fontSize: 18, fontWeight: "bold", color: "#333", marginBottom: 5 },
+  esporte: { fontSize: 14, color: "#666", marginBottom: 6 },
+  info: {
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 4,
+    fontWeight: "500",
+  },
+  valorTotal: {
+    fontSize: 16,
+    color: "#2E7D32",
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
   btnAvaliar: {
     marginTop: 10,
     alignSelf: "flex-start",

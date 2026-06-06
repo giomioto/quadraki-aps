@@ -1,4 +1,4 @@
-﻿import { router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import {
     Alert,
@@ -12,27 +12,55 @@ import {
     Platform
 } from "react-native";
 
+import { apiFetch } from "../services/api";
+import { useUserProfiles } from "../context/user-profiles-context";
+
 export default function LoginScreen() {
   const { profile } = useLocalSearchParams();
   const isPraticante = profile !== "proprietario";
+  const { updateProfile } = useUserProfiles();
 
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !senha) {
       Alert.alert("Erro", "Por favor, preencha todos os campos!");
       return;
     }
 
-    if (email === "teste@teste.com" && senha === "teste") {
+    try {
       if (isPraticante) {
+        // Envia requisição POST para validar email e senha
+        const user = await apiFetch<any>("usuarios/login", {
+          method: "POST",
+          body: JSON.stringify({ email: email.trim(), senha }),
+        });
+        updateProfile("praticante", {
+          id_usuario: user.id_usuario,
+          name: user.nome,
+          email: user.email,
+          document: user.cpf || "",
+        });
         router.replace("/(praticante)");
       } else {
+        // Envia requisição POST para validar email e senha do proprietário
+        const owner = await apiFetch<any>("proprietarios/login", {
+          method: "POST",
+          body: JSON.stringify({ email: email.trim(), senha }),
+        });
+        updateProfile("proprietario", {
+          id_proprietario: owner.id_proprietario,
+          name: owner.nome,
+          email: owner.email,
+          document: owner.cpf || "",
+          phone: owner.telefone || "",
+        });
         router.replace("/(proprietario)");
       }
-    } else {
-      Alert.alert("Erro", "Credenciais inválidas");
+    } catch (error: any) {
+      const msg = error instanceof Error ? error.message : "E-mail ou senha incorretos.";
+      Alert.alert("Erro", msg);
     }
   };
 

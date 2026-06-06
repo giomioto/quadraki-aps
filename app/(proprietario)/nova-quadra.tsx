@@ -1,36 +1,111 @@
 import { router } from "expo-router";
 import { useState } from "react";
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
+import { apiFetch } from "../../services/api";
+import { useUserProfile } from "../../context/user-profiles-context";
+
 export default function NovaQuadraScreen() {
+  const { profile } = useUserProfile("proprietario");
+  const idProprietarioActive = profile.id_proprietario;
+
   const [nome, setNome] = useState("");
   const [endereco, setEndereco] = useState("");
   const [valor, setValor] = useState("");
   const [tipoPiso, setTipoPiso] = useState("");
+  const [cnpj, setCnpj] = useState("");
 
-  // No prototipo o id do proprietario e fixo; no backend viria do usuario autenticado.
-  const idUsuario = "1";
+  const [equipamentosLocais, setEquipamentosLocais] = useState<{ descricao: string; valor: number }[]>([]);
+  const [novoEquipDesc, setNovoEquipDesc] = useState("");
+  const [novoEquipVal, setNovoEquipVal] = useState("");
 
-  const handleSalvar = () => {
-    if (!nome.trim() || !endereco.trim() || !valor.trim() || !tipoPiso.trim()) {
+  const handleAdicionarEquipamentoLocal = () => {
+    if (!novoEquipDesc.trim() || !novoEquipVal.trim()) {
+      Alert.alert("Erro", "Preencha a descrição e o valor do equipamento.");
+      return;
+    }
+    const valFloat = parseFloat(novoEquipVal.replace(",", "."));
+    if (isNaN(valFloat)) {
+      Alert.alert("Erro", "Insira um valor válido.");
+      return;
+    }
+    setEquipamentosLocais(prev => [
+      ...prev,
+      { descricao: novoEquipDesc.trim(), valor: valFloat }
+    ]);
+    setNovoEquipDesc("");
+    setNovoEquipVal("");
+  };
+
+  const handleRemoverEquipamentoLocal = (index: number) => {
+    setEquipamentosLocais(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSalvar = async () => {
+    if (!nome.trim() || !endereco.trim() || !valor.trim() || !tipoPiso.trim() || !cnpj.trim()) {
       Alert.alert(
         "Campos obrigatórios",
-        "Preencha nome, endereço, valor e tipo de piso.",
+        "Preencha nome, endereço, valor, esporte e CNPJ.",
       );
       return;
     }
 
-    router.replace("/(proprietario)/gerenciar-catalogo");
+    const valorFloat = parseFloat(valor.replace(",", "."));
+    if (isNaN(valorFloat)) {
+      Alert.alert("Erro", "O valor inserido não é válido.");
+      return;
+    }
+
+    const cnpjCleaned = cnpj.replace(/\D/g, "");
+    if (!cnpjCleaned || cnpjCleaned.length !== 14) {
+      Alert.alert("Erro", "O CNPJ inserido deve ter exatamente 14 dígitos.");
+      return;
+    }
+    const cnpjInt = parseInt(cnpjCleaned, 10);
+
+    try {
+      const quadra = await apiFetch<any>("quadras", {
+        method: "POST",
+        body: JSON.stringify({
+          id_proprietario: idProprietarioActive,
+          nome: nome.trim(),
+          esporte: tipoPiso.trim(), // mapeia o tipo de piso/esporte
+          valor: valorFloat,
+          endereco: endereco.trim(),
+          cnpj: cnpjInt,
+        }),
+      });
+
+      const id_quadra = quadra.id_quadra;
+
+      // Salva os equipamentos extras associados a essa quadra
+      for (const eq of equipamentosLocais) {
+        await apiFetch("equipamentos", {
+          method: "POST",
+          body: JSON.stringify({
+            id_quadra: id_quadra,
+            descricao: eq.descricao,
+            valor: eq.valor,
+          }),
+        });
+      }
+
+      Alert.alert("Sucesso", "Nova quadra cadastrada com sucesso!");
+      router.replace("/(proprietario)/gerenciar-catalogo");
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Erro", "Falha ao cadastrar quadra no servidor.");
+    }
   };
 
   return (
@@ -48,12 +123,6 @@ export default function NovaQuadraScreen() {
         </Text>
 
         <View style={styles.card}>
-          <Text style={styles.label}>id_quadra</Text>
-          <TextInput
-            style={styles.inputDisabled}
-            value="Gerado automaticamente"
-            editable={false}
-          />
 
           <Text style={styles.label}>nome</Text>
           <TextInput
@@ -80,7 +149,7 @@ export default function NovaQuadraScreen() {
             keyboardType="decimal-pad"
           />
 
-          <Text style={styles.label}>tipo_piso</Text>
+          <Text style={styles.label}>Esporte</Text>
           <TextInput
             style={styles.input}
             value={tipoPiso}
@@ -88,12 +157,63 @@ export default function NovaQuadraScreen() {
             placeholder="Ex: Sintético"
           />
 
-          <Text style={styles.label}>id_usuario (proprietário)</Text>
+          <Text style={styles.label}>CNPJ da Quadra</Text>
           <TextInput
-            style={styles.inputDisabled}
-            value={idUsuario}
-            editable={false}
+            style={styles.input}
+            value={cnpj}
+            onChangeText={(text) => setCnpj(text.replace(/\D/g, ""))}
+            placeholder="Ex: 12.345.678/0001-99"
+            keyboardType="numeric"
           />
+          </View>
+
+        {/* Seção de Equipamentos Extras (UC009) */}
+        <Text style={styles.secaoTitulo}>Equipamentos Extras (Opcional)</Text>
+        <View style={styles.card}>
+          {equipamentosLocais.length === 0 ? (
+            <Text style={styles.semEquipamentos}>Nenhum equipamento adicionado ainda.</Text>
+          ) : (
+            equipamentosLocais.map((eq, index) => (
+              <View key={index} style={styles.equipItem}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.equipDesc}>⚽ {eq.descricao}</Text>
+                  <Text style={styles.equipValor}>R$ {eq.valor.toFixed(2).replace(".", ",")} por hora</Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.btnRemoverEquip}
+                  onPress={() => handleRemoverEquipamentoLocal(index)}
+                >
+                  <Text style={styles.txtRemoverEquip}>Remover</Text>
+                </TouchableOpacity>
+              </View>
+            ))
+          )}
+
+          <Text style={styles.subtituloSecao}>Adicionar Novo Equipamento</Text>
+          
+          <Text style={styles.label}>Descrição do Equipamento</Text>
+          <TextInput
+            style={styles.input}
+            value={novoEquipDesc}
+            onChangeText={setNovoEquipDesc}
+            placeholder="Ex: Colete de treino, Bola Oficial"
+          />
+
+          <Text style={styles.label}>Valor (por hora)</Text>
+          <TextInput
+            style={styles.input}
+            value={novoEquipVal}
+            onChangeText={setNovoEquipVal}
+            placeholder="Ex: 10.00"
+            keyboardType="decimal-pad"
+          />
+
+          <TouchableOpacity
+            style={styles.btnAdicionarEquip}
+            onPress={handleAdicionarEquipamentoLocal}
+          >
+            <Text style={styles.txtAdicionarEquip}>+ Adicionar à Lista</Text>
+          </TouchableOpacity>
         </View>
 
         <TouchableOpacity style={styles.botaoSalvar} onPress={handleSalvar}>
@@ -136,6 +256,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderColor: "#e5e7eb",
+    marginBottom: 15,
   },
   label: {
     marginTop: 10,
@@ -181,5 +302,70 @@ const styles = StyleSheet.create({
   textoCancelar: {
     color: "#475569",
     fontWeight: "600",
+  },
+  secaoTitulo: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#1565C0",
+    marginTop: 24,
+    marginBottom: 10,
+  },
+  subtituloSecao: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#334155",
+    marginTop: 18,
+    marginBottom: 6,
+    borderTopWidth: 1,
+    borderTopColor: "#e5e7eb",
+    paddingTop: 15,
+  },
+  semEquipamentos: {
+    textAlign: "center",
+    color: "#64748b",
+    marginVertical: 10,
+    fontStyle: "italic",
+  },
+  equipItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f1f5f9",
+  },
+  equipDesc: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#1e293b",
+  },
+  equipValor: {
+    fontSize: 14,
+    color: "#2E7D32",
+    fontWeight: "500",
+    marginTop: 2,
+  },
+  btnRemoverEquip: {
+    backgroundColor: "#ffebee",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  txtRemoverEquip: {
+    color: "#d32f2f",
+    fontWeight: "700",
+    fontSize: 12,
+  },
+  btnAdicionarEquip: {
+    marginTop: 15,
+    backgroundColor: "#2E7D32",
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+  txtAdicionarEquip: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: 15,
   },
 });

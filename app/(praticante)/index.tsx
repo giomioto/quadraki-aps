@@ -1,67 +1,44 @@
-﻿import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  ActivityIndicator,
 } from "react-native";
-
-const QUADRAS_MOCK = [
-  {
-    id: "1",
-    nome: "Arena Futebol 7",
-    esporte: "Futebol Society",
-    distancia: "1.2 km",
-    preco: "R$ 150,00/h",
-    avaliacao: 4.8,
-  },
-  {
-    id: "2",
-    nome: "Smash Padel & Tênis",
-    esporte: "Padel e Tênis",
-    distancia: "2.5 km",
-    preco: "R$ 120,00/h",
-    avaliacao: 4.9,
-  },
-  {
-    id: "3",
-    nome: "Poliesportiva Central",
-    esporte: "Futsal / Basquete",
-    distancia: "3.1 km",
-    preco: "R$ 80,00/h",
-    avaliacao: 4.5,
-  },
-  {
-    id: "4",
-    nome: "Beach Sports Areia",
-    esporte: "Beach Tennis",
-    distancia: "4.0 km",
-    preco: "R$ 100,00/h",
-    avaliacao: 4.7,
-  },
-  {
-    id: "5",
-    nome: "Clube do Vôlei",
-    esporte: "Voleibol",
-    distancia: "5.5 km",
-    preco: "R$ 90,00/h",
-    avaliacao: 4.6,
-  },
-];
+import { apiFetch } from "../../services/api";
 
 export default function MenuPraticanteScreen() {
-  const renderItem = ({ item }: { item: (typeof QUADRAS_MOCK)[0] }) => (
+  const [quadras, setQuadras] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadQuadras() {
+      try {
+        const data = await apiFetch<any[]>("quadras");
+        setQuadras(data);
+      } catch (error) {
+        console.error("Erro ao carregar quadras:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadQuadras();
+  }, []);
+
+  const renderItem = ({ item }: { item: any }) => (
     <TouchableOpacity
       style={styles.card}
       onPress={() =>
         router.push({
           pathname: "/reserva",
           params: {
-            id: item.id,
+            id: String(item.id_quadra),
             nome: item.nome,
-            preco: item.preco,
+            preco: `R$ ${item.valor}`,
             horario: "19:00",
           },
         })
@@ -71,16 +48,16 @@ export default function MenuPraticanteScreen() {
         <Text style={styles.cardTitle}>{item.nome}</Text>
         <View style={styles.ratingContainer}>
           <Ionicons name="star" size={16} color="#FFD700" />
-          <Text style={styles.ratingText}>{item.avaliacao}</Text>
+          <Text style={styles.ratingText}>4.8</Text>
         </View>
       </View>
       <Text style={styles.cardSport}>{item.esporte}</Text>
       <View style={styles.cardFooter}>
-        <Text style={styles.cardDistance}>
+        <Text style={styles.cardDistance} numberOfLines={1}>
           <Ionicons name="location-outline" size={14} color="#666" />{" "}
-          {item.distancia}
+          {item.endereco || "Sem endereço"}
         </Text>
-        <Text style={styles.cardPrice}>{item.preco}</Text>
+        <Text style={styles.cardPrice}>R$ {parseFloat(item.valor).toFixed(2).replace(".", ",")}/h</Text>
       </View>
     </TouchableOpacity>
   );
@@ -103,13 +80,24 @@ export default function MenuPraticanteScreen() {
         </TouchableOpacity>
       </View>
 
-      <FlatList
-        data={QUADRAS_MOCK}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listContainer}
-        showsVerticalScrollIndicator={false}
-      />
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color="#2E7D32" />
+        </View>
+      ) : (
+        <FlatList
+          data={quadras}
+          keyExtractor={(item) => String(item.id_quadra)}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listContainer}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <Text style={{ textAlign: "center", color: "#666", marginTop: 20 }}>
+              Nenhuma quadra disponível no momento.
+            </Text>
+          }
+        />
+      )}
     </View>
   );
 }

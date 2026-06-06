@@ -3,7 +3,7 @@ import { UserProfileScreen } from "../../components/user-profile-screen";
 import { useUserProfile } from "../../context/user-profiles-context";
 
 export default function PerfilPraticanteScreen() {
-  const { profile } = useUserProfile("praticante");
+  const { profile, logout } = useUserProfile("praticante");
 
   return (
     <UserProfileScreen
@@ -20,7 +20,6 @@ export default function PerfilPraticanteScreen() {
           icon: "person-outline",
         },
         { label: "E-mail", value: profile.email, icon: "mail-outline" },
-        { label: "Telefone", value: profile.phone, icon: "call-outline" },
         { label: "CPF/CNPJ", value: profile.document, icon: "card-outline" },
         {
           label: "Tipo de usuário",
@@ -34,6 +33,7 @@ export default function PerfilPraticanteScreen() {
       }
       logoutLabel="Sair da conta"
       onLogoutPress={() => {
+        logout();
         router.dismissAll();
         router.replace("/");
       }}

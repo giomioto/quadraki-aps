@@ -1,5 +1,5 @@
-﻿import { router } from "expo-router";
-import { useState } from "react";
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   FlatList,
   Platform,
@@ -7,8 +7,10 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ActivityIndicator,
+  ScrollView,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import { apiFetch } from "../../services/api";
 
 const ESPORTES_DISPONIVEIS = [
   "Futebol Society",
@@ -17,66 +19,84 @@ const ESPORTES_DISPONIVEIS = [
   "Basquete",
   "Tênis",
   "Beach Tennis",
+  "Padel e Tênis",
 ];
 
 const RAIO_OPCOES = ["5 km", "10 km", "15 km", "Qualquer"];
 
-const QUADRAS_MOCK = [
-  {
-    id: "1",
-    nome: "Arena Sports Curitiba",
-    esporte: "Futebol Society",
-    distancia: "2",
-    preco: "R$ 150,00",
-    disponibilidade: "19:00 - 20:00",
-  },
-  {
-    id: "2",
-    nome: "Clube do Vôlei",
-    esporte: "Vôlei de Areia",
-    distancia: "7",
-    preco: "R$ 80,00",
-    disponibilidade: "20:00 - 21:00",
-  },
-  {
-    id: "3",
-    nome: "Quadra Mágica Basquete",
-    esporte: "Basquete",
-    distancia: "12",
-    preco: "R$ 100,00",
-    disponibilidade: "18:00 - 19:30",
-  },
-  {
-    id: "4",
-    nome: "Complexo de Tênis Ace",
-    esporte: "Tênis",
-    distancia: "4",
-    preco: "R$ 120,00",
-    disponibilidade: "17:00 - 18:00",
-  },
-  {
-    id: "5",
-    nome: "Beach Tennis Paradise",
-    esporte: "Beach Tennis",
-    distancia: "16",
-    preco: "R$ 90,00",
-    disponibilidade: "16:00 - 17:30",
-  },
-  {
-    id: "6",
-    nome: "Futsal Show",
-    esporte: "Futsal",
-    distancia: "3",
-    preco: "R$ 110,00",
-    disponibilidade: "21:00 - 22:00",
-  }
+const SLOTS_HORARIOS = [
+  "08:00 - 09:00",
+  "09:00 - 10:00",
+  "10:00 - 11:00",
+  "11:00 - 12:00",
+  "12:00 - 13:00",
+  "13:00 - 14:00",
+  "14:00 - 15:00",
+  "15:00 - 16:00",
+  "16:00 - 17:00",
+  "17:00 - 18:00",
+  "18:00 - 19:00",
+  "19:00 - 20:00",
+  "20:00 - 21:00",
+  "21:00 - 22:00"
 ];
 
+const getLocalDateString = (date: Date) => {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+};
+
+const getNext14Days = () => {
+  const dates = [];
+  const daysOfWeek = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+  const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+  
+  for (let i = 0; i < 14; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    d.setHours(12, 0, 0, 0);
+    dates.push({
+      dateObj: d,
+      dayName: i === 0 ? "Hoje" : daysOfWeek[d.getDay()],
+      dayNum: d.getDate().toString().padStart(2, "0"),
+      monthName: months[d.getMonth()],
+      formatted: getLocalDateString(d),
+    });
+  }
+  return dates;
+};
+
 export default function BuscarScreen() {
+  const [quadras, setQuadras] = useState<any[]>([]);
+  const [agendamentos, setAgendamentos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [esportesSelecionados, setEsportesSelecionados] = useState<string[]>([]);
-  const [data, setData] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [data, setData] = useState(() => {
+    const d = new Date();
+    d.setHours(12, 0, 0, 0);
+    return d;
+  });
   const [raioSelecionado, setRaioSelecionado] = useState("Qualquer");
+
+  useEffect(() => {
+    async function loadQuadrasEAgendamentos() {
+      try {
+        const [resQuadras, resAgendamentos] = await Promise.all([
+          apiFetch<any[]>("quadras"),
+          apiFetch<any[]>("agendamentos"),
+        ]);
+        setQuadras(resQuadras);
+        setAgendamentos(resAgendamentos);
+      } catch (error) {
+        console.error("Erro ao carregar quadras na busca:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadQuadrasEAgendamentos();
+  }, []);
 
   const toggleEsporte = (esporte: string) => {
     setEsportesSelecionados((prev) =>
@@ -86,15 +106,39 @@ export default function BuscarScreen() {
     );
   };
 
-  const onChangeDate = (event: any, selectedDate?: Date) => {
-    const currentDate = selectedDate || data;
-    // Ocultar modal após selecionar no Android
-    setShowDatePicker(Platform.OS === 'ios' || Platform.OS === 'web');
-    setData(currentDate);
-  };
+  // Filtragem conjunta (Esporte + Raio) com dados do backend
+  const resultados = quadras.map((q) => {
+    // Gera uma distância determinística baseada no ID
+    const distNum = (q.id_quadra * 3.7) % 14 + 1;
 
-  // Filtragem conjunta (Esporte + Raio)
-  const resultados = QUADRAS_MOCK.filter(q => {
+    // Filtra os horários livres reais no dia selecionado
+    const formattedDate = getLocalDateString(data);
+    const courtBookings = agendamentos.filter(
+      (b) => b.id_quadra === q.id_quadra && b.data_agendamento === formattedDate && b.status !== "Cancelada"
+    );
+    const bookedSlots = courtBookings.map((b) => `${b.hora_inicio} - ${b.hora_fim}`);
+
+    const isToday = formattedDate === getLocalDateString(new Date());
+    const currentHour = new Date().getHours();
+
+    const availableSlots = SLOTS_HORARIOS.filter((slot) => {
+      if (bookedSlots.includes(slot)) return false;
+      if (isToday) {
+        const startHour = parseInt(slot.split(":")[0], 10);
+        return startHour > currentHour;
+      }
+      return true;
+    });
+
+    return {
+      id: String(q.id_quadra),
+      nome: q.nome,
+      esporte: q.esporte,
+      distancia: distNum.toFixed(1),
+      preco: `R$ ${parseFloat(q.valor).toFixed(2).replace(".", ",")}`,
+      disponibilidade: availableSlots,
+    };
+  }).filter(q => {
     // Filtro Esporte
     if (esportesSelecionados.length > 0 && !esportesSelecionados.includes(q.esporte)) {
       return false;
@@ -131,25 +175,35 @@ export default function BuscarScreen() {
       </View>
       
       <Text style={styles.label}>Data da reserva:</Text>
-      {Platform.OS === 'android' && (
-        <TouchableOpacity 
-          style={styles.dateInput} 
-          onPress={() => setShowDatePicker(true)}
-        >
-          <Text style={styles.dateText}>
-            {data.toLocaleDateString("pt-BR")} 📅
-          </Text>
-        </TouchableOpacity>
-      )}
-      {(showDatePicker || Platform.OS !== 'android') && (
-        <DateTimePicker
-          value={data}
-          mode="date"
-          display="default"
-          style={styles.datePickerNative}
-          onChange={onChangeDate}
-        />
-      )}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.datesContainer}
+      >
+        {getNext14Days().map((item) => {
+          const isSelected = data.toDateString() === item.dateObj.toDateString();
+          return (
+            <TouchableOpacity
+              key={item.formatted}
+              style={[
+                styles.dateCard,
+                isSelected && styles.dateCardSelected,
+              ]}
+              onPress={() => setData(item.dateObj)}
+            >
+              <Text style={[styles.dateCardDayName, isSelected && styles.dateCardTextSelected]}>
+                {item.dayName}
+              </Text>
+              <Text style={[styles.dateCardDayNum, isSelected && styles.dateCardTextSelected]}>
+                {item.dayNum}
+              </Text>
+              <Text style={[styles.dateCardMonth, isSelected && styles.dateCardTextSelected]}>
+                {item.monthName}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
 
       <Text style={styles.labelMargin}>Distância máxima (Raio):</Text>
       <View style={styles.raioContainer}>
@@ -166,43 +220,55 @@ export default function BuscarScreen() {
         ))}
       </View>
 
-      <FlatList
-        data={resultados}
-        keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.listPadding}
-        ListEmptyComponent={<Text style={styles.emptyTxt}>Nenhuma quadra encontrada nestes filtros.</Text>}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.cardResult}
-            onPress={() =>
-              router.push({
-                pathname: "/reserva",
-                params: {
-                  id: item.id,
-                  nome: item.nome,
-                  preco: item.preco,
-                  horario: item.disponibilidade,
-                },
-              })
-            }
-          >
-            <View>
-              <Text style={styles.nomeQuadra}>{item.nome}</Text>
-              <Text style={styles.infoQuadra}>
-                {item.esporte} • {item.distancia} km
-              </Text>
-              <Text style={styles.infoDisponivel}>
-                Livre Hoje: {item.disponibilidade}
-              </Text>
-            </View>
-            <View style={styles.rightCard}>
-              <Text style={styles.precoQuadra}>{item.preco}/h</Text>
-              <Text style={styles.agendarTxt}>Agendar</Text>
-            </View>
-          </TouchableOpacity>
-        )}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#2E7D32" style={{ marginTop: 20 }} />
+      ) : (
+        <FlatList
+          data={resultados}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listPadding}
+          ListEmptyComponent={<Text style={styles.emptyTxt}>Nenhuma quadra encontrada nestes filtros.</Text>}
+          renderItem={({ item }) => {
+            const hasAvailable = item.disponibilidade.length > 0;
+            const displaySchedules = hasAvailable
+              ? item.disponibilidade.map((s: string) => s.split(" - ")[0]).join(", ")
+              : "Sem horários";
+
+            return (
+              <TouchableOpacity
+                style={styles.cardResult}
+                onPress={() =>
+                  router.push({
+                    pathname: "/reserva",
+                    params: {
+                      id: item.id,
+                      nome: item.nome,
+                      preco: item.preco,
+                      horario: hasAvailable ? item.disponibilidade[0] : "19:00 - 20:00",
+                      data: getLocalDateString(data),
+                    },
+                  })
+                }
+              >
+                <View style={{ flex: 1, paddingRight: 10 }}>
+                  <Text style={styles.nomeQuadra}>{item.nome}</Text>
+                  <Text style={styles.infoQuadra}>
+                    {item.esporte} • {item.distancia} km
+                  </Text>
+                  <Text style={[styles.infoDisponivel, !hasAvailable && { color: "#d32f2f" }]}>
+                    Disponíveis: {displaySchedules}
+                  </Text>
+                </View>
+                <View style={styles.rightCard}>
+                  <Text style={styles.precoQuadra}>{item.preco}/h</Text>
+                  <Text style={styles.agendarTxt}>Agendar</Text>
+                </View>
+              </TouchableOpacity>
+            );
+          }}
+        />
+      )}
     </View>
   );
 }
@@ -241,22 +307,51 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
-  dateInput: {
+  datesContainer: {
+    paddingVertical: 5,
+    paddingHorizontal: 5,
+    marginBottom: 15,
+  },
+  dateCard: {
+    width: 65,
+    height: 80,
     backgroundColor: "#fff",
-    padding: 15,
     borderRadius: 8,
-    marginBottom: 5,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#e0e0e0",
     justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
+    elevation: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
   },
-  datePickerNative: {
-    marginBottom: 10,
-    alignSelf: 'flex-start'
+  dateCardSelected: {
+    backgroundColor: "#2E7D32",
+    borderColor: "#2E7D32",
   },
-  dateText: {
+  dateCardDayName: {
+    fontSize: 10,
+    color: "#666",
+    textTransform: "uppercase",
+    fontWeight: "bold",
+    marginBottom: 2,
+  },
+  dateCardDayNum: {
+    fontSize: 18,
+    fontWeight: "bold",
     color: "#333",
-    fontSize: 16,
+    marginBottom: 2,
+  },
+  dateCardMonth: {
+    fontSize: 9,
+    color: "#666",
+    fontWeight: "500",
+  },
+  dateCardTextSelected: {
+    color: "#fff",
   },
   raioContainer: {
     flexDirection: "row",
