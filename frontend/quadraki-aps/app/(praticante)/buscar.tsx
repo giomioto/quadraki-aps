@@ -119,13 +119,17 @@ export default function BuscarScreen() {
     const bookedSlots = courtBookings.map((b) => `${b.hora_inicio} - ${b.hora_fim}`);
 
     const isToday = formattedDate === getLocalDateString(new Date());
-    const currentHour = new Date().getHours();
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
 
     const availableSlots = SLOTS_HORARIOS.filter((slot) => {
       if (bookedSlots.includes(slot)) return false;
       if (isToday) {
-        const startHour = parseInt(slot.split(":")[0], 10);
-        return startHour > currentHour;
+        const [horaInicio] = slot.split(" - ");
+        const [h, m] = horaInicio.split(":").map(Number);
+        if (h < currentHour) return false;
+        if (h === currentHour && m < currentMinute) return false;
       }
       return true;
     });
@@ -154,7 +158,7 @@ export default function BuscarScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Encontrar Quadras (UC004)</Text>
+      <Text style={styles.titulo}>Encontrar Quadras</Text>
 
       <Text style={styles.label}>Esportes de interesse:</Text>
       <View style={styles.esportesContainer}>

@@ -20,6 +20,11 @@ export default function GerenciarCatalogoScreen() {
   const [loading, setLoading] = useState(true);
 
   async function loadQuadras() {
+    if (!idProprietarioActive) {
+      setQuadras([]);
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       const data = await apiFetch<any[]>(`quadras/?id_proprietario=${idProprietarioActive}`);
@@ -72,7 +77,7 @@ export default function GerenciarCatalogoScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Meu Catálogo (UC006)</Text>
+      <Text style={styles.titulo}>Meu Catálogo</Text>
 
       {loading ? (
         <View style={{ flex: 1, justifyContent: "center" }}>

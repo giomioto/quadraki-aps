@@ -11,6 +11,11 @@ export default function HistoricoProprietarioScreen() {
   const [historico, setHistorico] = useState<any[]>([]);
 
   async function loadHistorico() {
+    if (!idProprietarioActive) {
+      setHistorico([]);
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       
@@ -94,7 +99,7 @@ export default function HistoricoProprietarioScreen() {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <Text style={styles.titulo}>Histórico de Reservas (UC007)</Text>
+      <Text style={styles.titulo}>Histórico de Reservas</Text>
 
       {loading ? (
         <ActivityIndicator size="large" color="#1565C0" style={{ marginTop: 20 }} />

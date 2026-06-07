@@ -10,8 +10,10 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { apiFetch } from "../../services/api";
+import { useUserProfile } from "../../context/user-profiles-context";
 
 export default function MenuPraticanteScreen() {
+  const { logout } = useUserProfile("praticante");
   const [quadras, setQuadras] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -72,8 +74,7 @@ export default function MenuPraticanteScreen() {
         <TouchableOpacity
           style={styles.logoutBtn}
           onPress={() => {
-            router.dismissAll();
-            router.replace("/");
+            logout();
           }}
         >
           <Ionicons name="log-out-outline" size={24} color="#d32f2f" />

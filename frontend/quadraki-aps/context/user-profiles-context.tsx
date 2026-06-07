@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useContext, useMemo, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, View, Platform } from "react-native";
+import { router } from "expo-router";
 
 export type UserRole = "praticante" | "proprietario";
 
@@ -20,6 +21,7 @@ type UpdateProfileInput = Partial<UserProfileData>;
 
 type UserProfilesContextValue = {
   profiles: UserProfilesState;
+  activeRole: UserRole | null;
   updateProfile: (role: UserRole, updates: UpdateProfileInput) => void;
   logout: (role: UserRole) => void;
 };
@@ -59,6 +61,7 @@ const UserProfilesContext = createContext<UserProfilesContextValue | null>(
 
 export function UserProfilesProvider({ children }: { children: ReactNode }) {
   const [profiles, setProfiles] = useState<UserProfilesState>(initialProfiles);
+  const [activeRole, setActiveRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -67,6 +70,10 @@ export function UserProfilesProvider({ children }: { children: ReactNode }) {
         const stored = await AsyncStorage.getItem("@UserProfiles");
         if (stored) {
           setProfiles(JSON.parse(stored));
+        }
+        const storedRole = await AsyncStorage.getItem("@ActiveRole");
+        if (storedRole) {
+          setActiveRole(storedRole as UserRole);
         }
       } catch (e) {
         console.error("Erro ao carregar perfis salvos:", e);
@@ -80,6 +87,7 @@ export function UserProfilesProvider({ children }: { children: ReactNode }) {
   const value = useMemo<UserProfilesContextValue>(
     () => ({
       profiles,
+      activeRole,
       updateProfile: (role, updates) => {
         setProfiles((current) => {
           const next = {
@@ -94,6 +102,10 @@ export function UserProfilesProvider({ children }: { children: ReactNode }) {
           });
           return next;
         });
+        setActiveRole(role);
+        AsyncStorage.setItem("@ActiveRole", role).catch(err => {
+          console.error("Erro ao salvar activeRole:", err);
+        });
       },
       logout: (role) => {
         setProfiles((current) => {
@@ -101,14 +113,39 @@ export function UserProfilesProvider({ children }: { children: ReactNode }) {
             ...current,
             [role]: { ...emptyProfile },
           };
-          AsyncStorage.setItem("@UserProfiles", JSON.stringify(next)).catch(err => {
-            console.error("Erro ao salvar perfis ao deslogar:", err);
-          });
           return next;
         });
+        setActiveRole(null);
+
+        const nextProfiles = {
+          ...profiles,
+          [role]: { ...emptyProfile },
+        };
+
+        if (Platform.OS === "web") {
+          try {
+            localStorage.setItem("@UserProfiles", JSON.stringify(nextProfiles));
+            localStorage.removeItem("@ActiveRole");
+          } catch (e) {
+            console.error("Erro ao salvar perfis no localStorage:", e);
+          }
+          window.location.href = "/";
+        } else {
+          AsyncStorage.setItem("@UserProfiles", JSON.stringify(nextProfiles)).catch(err => {
+            console.error("Erro ao salvar perfis ao deslogar:", err);
+          });
+          AsyncStorage.removeItem("@ActiveRole")
+            .then(() => {
+              router.replace("/");
+            })
+            .catch(err => {
+              console.error("Erro ao remover activeRole:", err);
+              router.replace("/");
+            });
+        }
       },
     }),
-    [profiles],
+    [profiles, activeRole],
   );
 
   if (loading) {

@@ -116,7 +116,7 @@ class QuadrasViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Quadras.objects.all()
         id_proprietario = self.request.query_params.get('id_proprietario')
-        if id_proprietario:
+        if id_proprietario and id_proprietario.isdigit():
             queryset = queryset.filter(id_proprietario=id_proprietario)
         return queryset
 
@@ -126,7 +126,7 @@ class EquipamentosViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Equipamentos.objects.all()
         id_quadra = self.request.query_params.get('id_quadra')
-        if id_quadra:
+        if id_quadra and id_quadra.isdigit():
             queryset = queryset.filter(id_quadra=id_quadra)
         return queryset
 
@@ -137,9 +137,9 @@ class AgendamentosViewSet(viewsets.ModelViewSet):
         queryset = Agendamentos.objects.all()
         id_usuario = self.request.query_params.get('id_usuario')
         id_quadra = self.request.query_params.get('id_quadra')
-        if id_usuario:
+        if id_usuario and id_usuario.isdigit():
             queryset = queryset.filter(id_usuario=id_usuario)
-        if id_quadra:
+        if id_quadra and id_quadra.isdigit():
             queryset = queryset.filter(id_quadra=id_quadra)
         return queryset
 
@@ -155,7 +155,7 @@ class AvaliacoesViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Avaliacoes.objects.all()
         id_quadra = self.request.query_params.get('id_quadra')
-        if id_quadra:
+        if id_quadra and id_quadra.isdigit():
             queryset = queryset.filter(id_quadra=id_quadra)
         return queryset
 
@@ -165,7 +165,7 @@ class PagamentosViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Pagamentos.objects.all()
         id_agendamento = self.request.query_params.get('id_agendamento')
-        if id_agendamento:
+        if id_agendamento and id_agendamento.isdigit():
             queryset = queryset.filter(id_agendamento=id_agendamento)
         return queryset
 
@@ -175,6 +175,6 @@ class AluguelEquipamentosViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = AluguelEquipamentos.objects.all()
         id_agendamento = self.request.query_params.get('id_agendamento')
-        if id_agendamento:
+        if id_agendamento and id_agendamento.isdigit():
             queryset = queryset.filter(id_agendamento=id_agendamento)
         return queryset

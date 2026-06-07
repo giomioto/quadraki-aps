@@ -95,6 +95,29 @@ export default function ReservaScreen() {
     setDataAgendamento(currentDate);
   };
 
+  useEffect(() => {
+    const isToday = getLocalDateString(dataAgendamento) === getLocalDateString(new Date());
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    const filtered = SLOTS_HORARIOS.filter((slot) => {
+      if (isToday) {
+        const [horaInicio] = slot.split(" - ");
+        const [h, m] = horaInicio.split(":").map(Number);
+        if (h < currentHour) return false;
+        if (h === currentHour && m < currentMinute) return false;
+      }
+      return true;
+    });
+
+    if (filtered.length > 0 && !filtered.includes(horarioSelecionado)) {
+      setHorarioSelecionado(filtered[0]);
+    } else if (filtered.length === 0) {
+      setHorarioSelecionado("");
+    }
+  }, [dataAgendamento]);
+
   const precoBase = parseFloat(
     String(preco)?.replace("R$", "").replace(",", ".").replace("/h", "").trim() || "0",
   );
@@ -205,9 +228,24 @@ export default function ReservaScreen() {
     }
   };
 
+  const isToday = getLocalDateString(dataAgendamento) === getLocalDateString(new Date());
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+
+  const slotsFiltrados = SLOTS_HORARIOS.filter((slot) => {
+    if (isToday) {
+      const [horaInicio] = slot.split(" - ");
+      const [h, m] = horaInicio.split(":").map(Number);
+      if (h < currentHour) return false;
+      if (h === currentHour && m < currentMinute) return false;
+    }
+    return true;
+  });
+
   const renderResumoExtras = () => (
     <ScrollView contentContainerStyle={styles.scroll}>
-      <Text style={styles.tituloSecao}>Confirme sua Reserva (UC008)</Text>
+      <Text style={styles.tituloSecao}>Confirme sua Reserva</Text>
       <View style={styles.card}>
         <Text style={styles.info}>
           <Text style={styles.bold}>Local:</Text> {nome}
@@ -254,27 +292,31 @@ export default function ReservaScreen() {
 
       <Text style={styles.tituloSecao}>Selecione o Horário do Agendamento</Text>
       <View style={styles.slotsContainer}>
-        {SLOTS_HORARIOS.map((slot) => {
-          const isSelected = horarioSelecionado === slot;
-          return (
-            <TouchableOpacity
-              key={slot}
-              style={[
-                styles.slotCard,
-                isSelected && styles.slotCardSelected,
-              ]}
-              onPress={() => setHorarioSelecionado(slot)}
-            >
-              <Text style={[styles.slotText, isSelected && styles.slotTextSelected]}>
-                {slot}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
+        {slotsFiltrados.length === 0 ? (
+          <Text style={styles.semHorariosText}>Sem horários disponíveis para hoje.</Text>
+        ) : (
+          slotsFiltrados.map((slot) => {
+            const isSelected = horarioSelecionado === slot;
+            return (
+              <TouchableOpacity
+                key={slot}
+                style={[
+                  styles.slotCard,
+                  isSelected && styles.slotCardSelected,
+                ]}
+                onPress={() => setHorarioSelecionado(slot)}
+              >
+                <Text style={[styles.slotText, isSelected && styles.slotTextSelected]}>
+                  {slot}
+                </Text>
+              </TouchableOpacity>
+            );
+          })
+        )}
       </View>
 
       <Text style={styles.tituloSecao}>
-        Deseja adicionar equipamentos? (UC009)
+        Deseja adicionar equipamentos?
       </Text>
       <View style={styles.card}>
         {equipamentos.length === 0 ? (
@@ -316,7 +358,13 @@ export default function ReservaScreen() {
 
       <TouchableOpacity
         style={styles.botaoPrincipal}
-        onPress={() => setEtapa(2)}
+        onPress={() => {
+          if (!horarioSelecionado) {
+            Alert.alert("Erro", "Por favor, selecione um horário para prosseguir.");
+            return;
+          }
+          setEtapa(2);
+        }}
       >
         <Text style={styles.textoBotao}>Avançar para Pagamento</Text>
       </TouchableOpacity>
@@ -329,7 +377,7 @@ export default function ReservaScreen() {
 
     return (
       <View style={styles.scroll}>
-        <Text style={styles.tituloSecao}>Pagamento (UC010)</Text>
+        <Text style={styles.tituloSecao}>Pagamento</Text>
         <Text style={styles.timer}>
           Tempo restante: {minutos.toString().padStart(2, "0")}:
           {segundos.toString().padStart(2, "0")}
@@ -499,6 +547,14 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   textoBotao: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  semHorariosText: {
+    width: "100%",
+    textAlign: "center",
+    color: "#d32f2f",
+    fontSize: 16,
+    fontWeight: "bold",
+    marginVertical: 15,
+  },
   timer: {
     fontSize: 18,
     color: "#d32f2f",

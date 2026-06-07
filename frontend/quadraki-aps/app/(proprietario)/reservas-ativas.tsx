@@ -19,6 +19,11 @@ export default function ReservasAtivasScreen() {
   const [loading, setLoading] = useState(true);
 
   async function loadReservas() {
+    if (!idProprietarioActive) {
+      setReservas([]);
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       
@@ -134,7 +139,7 @@ export default function ReservasAtivasScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Reservas de Hoje (UC012)</Text>
+      <Text style={styles.titulo}>Reservas de Hoje</Text>
 
       {loading ? (
         <View style={{ flex: 1, justifyContent: "center" }}>

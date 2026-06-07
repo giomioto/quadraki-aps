@@ -1,7 +1,19 @@
 import { router } from "expo-router";
+import { useEffect } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useUserProfiles } from "../context/user-profiles-context";
 
 export default function WelcomeScreen() {
+  const { activeRole } = useUserProfiles();
+
+  useEffect(() => {
+    if (activeRole === "proprietario") {
+      router.replace("/(proprietario)");
+    } else if (activeRole === "praticante") {
+      router.replace("/(praticante)");
+    }
+  }, [activeRole]);
+
   const handleSelectProfile = (profile: "praticante" | "proprietario") => {
     // Redireciona para a tela de login passando o perfil escolhido
     router.push({ pathname: "/login", params: { profile } });

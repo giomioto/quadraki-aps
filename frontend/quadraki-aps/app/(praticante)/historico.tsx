@@ -26,6 +26,11 @@ export default function HistoricoPraticanteScreen() {
   const [loading, setLoading] = useState(true);
 
   async function loadHistorico() {
+    if (!idUsuarioLogado) {
+      setHistorico([]);
+      setLoading(false);
+      return;
+    }
     try {
       const [agendamentos, quadras, rentals, equipments] = await Promise.all([
         apiFetch<any[]>(`agendamentos/?id_usuario=${idUsuarioLogado}`),
@@ -120,7 +125,7 @@ export default function HistoricoPraticanteScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Meu Histórico (UC007)</Text>
+      <Text style={styles.titulo}>Meu Histórico</Text>
 
       {loading ? (
         <View style={{ flex: 1, justifyContent: "center" }}>
@@ -172,7 +177,7 @@ export default function HistoricoPraticanteScreen() {
                     setModalVisivel(true);
                   }}
                 >
-                  <Text style={styles.txtBtn}>⭐ Avaliar Local (UC011)</Text>
+                  <Text style={styles.txtBtn}>⭐ Avaliar Local</Text>
                 </TouchableOpacity>
               )}
             </View>

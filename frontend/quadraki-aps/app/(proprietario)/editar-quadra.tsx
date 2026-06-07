@@ -19,7 +19,6 @@ type QuadraParams = {
   esporte?: string;
   valor?: string;
   endereco?: string;
-  tipoPiso?: string;
   idUsuario?: string;
   cnpj?: string;
 };
@@ -36,7 +35,6 @@ export default function EditarQuadraScreen() {
       esporte: params.esporte ?? "Futebol",
       valor: params.valor ?? "150.00",
       endereco: params.endereco ?? "Rua das Quadras, 123",
-      tipoPiso: params.tipoPiso ?? "Sintético",
       idUsuario: params.idUsuario ?? "1",
       cnpj: params.cnpj ?? "",
     }),
@@ -47,7 +45,6 @@ export default function EditarQuadraScreen() {
   const [esporte, setEsporte] = useState(quadraInicial.esporte);
   const [valor, setValor] = useState(quadraInicial.valor);
   const [endereco, setEndereco] = useState(quadraInicial.endereco);
-  const [tipoPiso, setTipoPiso] = useState(quadraInicial.tipoPiso);
   const [cnpj, setCnpj] = useState(quadraInicial.cnpj);
 
   const [equipamentos, setEquipamentos] = useState<any[]>([]);
@@ -189,13 +186,6 @@ export default function EditarQuadraScreen() {
         </Text>
 
         <View style={styles.card}>
-          <Text style={styles.label}>id_quadra</Text>
-          <TextInput
-            style={styles.inputDisabled}
-            value={quadraInicial.id}
-            editable={false}
-          />
-
           <Text style={styles.label}>nome</Text>
           <TextInput
             style={styles.input}
@@ -204,7 +194,7 @@ export default function EditarQuadraScreen() {
             placeholder="Ex: Quadra Society 1"
           />
 
-          <Text style={styles.label}>esporte</Text>
+          <Text style={styles.label}>Esporte</Text>
           <TextInput
             style={styles.input}
             value={esporte}
@@ -227,14 +217,6 @@ export default function EditarQuadraScreen() {
             onChangeText={setValor}
             placeholder="Ex: 150.00"
             keyboardType="decimal-pad"
-          />
-
-          <Text style={styles.label}>Esporte</Text>
-          <TextInput
-            style={styles.input}
-            value={tipoPiso}
-            onChangeText={setTipoPiso}
-            placeholder="Ex: Sintético"
           />
 
           <Text style={styles.label}>CNPJ da Quadra</Text>

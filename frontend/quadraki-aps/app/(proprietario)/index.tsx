@@ -6,7 +6,7 @@ import { apiFetch } from "../../services/api";
 import { useUserProfile } from "../../context/user-profiles-context";
 
 export default function MenuProprietarioScreen() {
-  const { profile } = useUserProfile("proprietario");
+  const { profile, logout } = useUserProfile("proprietario");
   const idProprietarioActive = profile.id_proprietario;
 
   const [loading, setLoading] = useState(true);
@@ -24,6 +24,10 @@ export default function MenuProprietarioScreen() {
   });
 
   async function loadMetrics() {
+    if (!idProprietarioActive) {
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       // 1. Busca as quadras deste proprietário
@@ -143,7 +147,12 @@ export default function MenuProprietarioScreen() {
           <Text style={styles.welcomeText}>Olá, {profile.name}!</Text>
           <Text style={styles.subText}>Painel de Controle</Text>
         </View>
-        <TouchableOpacity style={styles.logoutBtn} onPress={() => { router.dismissAll(); router.replace("/"); }}>
+        <TouchableOpacity
+          style={styles.logoutBtn}
+          onPress={() => {
+            logout();
+          }}
+        >
           <Ionicons name="log-out-outline" size={24} color="#d32f2f" />
         </TouchableOpacity>
       </View>

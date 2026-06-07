@@ -34,8 +34,6 @@ export default function PerfilPraticanteScreen() {
       logoutLabel="Sair da conta"
       onLogoutPress={() => {
         logout();
-        router.dismissAll();
-        router.replace("/");
       }}
     />
   );

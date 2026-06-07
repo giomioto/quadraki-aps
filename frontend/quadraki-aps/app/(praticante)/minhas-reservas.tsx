@@ -19,6 +19,11 @@ export default function MinhasReservasScreen() {
   const [loading, setLoading] = useState(true);
 
   async function loadReservas() {
+    if (!idUsuarioLogado) {
+      setReservas([]);
+      setLoading(false);
+      return;
+    }
     try {
       const [agendamentos, quadras, rentals, equipments] = await Promise.all([
         apiFetch<any[]>(`agendamentos/?id_usuario=${idUsuarioLogado}`),
