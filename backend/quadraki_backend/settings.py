@@ -83,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'quadraki',
         'USER': 'postgres',
-        'PASSWORD': 'Metallica13@', # Coloque a senha que configurou na instalação
+        'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '5432',
     }
